@@ -1,0 +1,28 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Dependencies and generated output
+node_modules/
+backend/node_modules/
+coverage/
+dist/
+
+# Uploaded guest identity documents must remain private
+backend/private-documents/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Transfer archives and editor-specific settings
+*.zip
+*.rar
+.vscode/
+.idea/
+

@@ -1,0 +1,2918 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hotel Energy Dashboard | Energy Intelligence</title>
+    <link href="main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- TOP BAR -->
+        <div class="top-bar">
+          <div>
+            <p class="dashboard-label">BUILDING ENERGY</p>
+            <h1>Energy Overview</h1>
+            <p class="dashboard-note">
+              Review consumption, compare floors and identify high-usage rooms.
+            </p>
+          </div>
+          <div class="top-actions">
+            <div class="search-box">
+              <svg
+                class="search-icon"
+                fill="none"
+                height="16"
+                viewbox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                <line
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                  x1="16.65"
+                  x2="21"
+                  y1="16.65"
+                  y2="21"
+                ></line>
+              </svg>
+              <input
+                aria-label="Search for a room"
+                id="roomSearch"
+                placeholder="Search room..."
+                type="text"
+              />
+              <button
+                aria-label="Clear room search"
+                class="search-clear"
+                id="clearSearch"
+                type="button"
+              >
+                ×
+              </button>
+              <div class="search-hint" id="searchHint"></div>
+            </div>
+          </div>
+        </div>
+        <!-- STATS CARDS -->
+        <section aria-label="Building energy at a glance" class="executive-overview">
+          <div class="overview-primary">
+            <div class="overview-main-label">
+              <span aria-hidden="true" class="overview-energy-icon">↗</span
+              ><span>Total energy usage</span
+              ><span class="overview-period" id="overviewPeriod">7 Days</span>
+            </div>
+            <div class="overview-total"><strong id="statTotal">4,476</strong><span>kWh</span></div>
+            <div class="overview-performance">
+              <span class="overview-trend" id="overviewTrend">↓ 3.1%</span
+              ><span>vs previous period</span>
+            </div>
+            <div class="overview-footer">
+              <span id="overviewPeak">Peak: Friday</span>
+              <svg
+                aria-label="Energy usage trend"
+                class="overview-sparkline"
+                preserveaspectratio="none"
+                role="img"
+                viewbox="0 0 140 36"
+              >
+                <polyline
+                  fill="none"
+                  points="0,28 23,25 46,30 70,15 92,20 115,12 140,8"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.8"
+                ></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="overview-secondary">
+            <div class="overview-secondary-header">
+              <span>Energy at a glance</span><span class="overview-header-line"></span>
+            </div>
+            <div class="overview-metrics">
+              <div class="overview-metric">
+                <span class="overview-metric-icon icon-cost">A$</span
+                ><span class="overview-metric-title">Estimated cost</span
+                ><strong id="statCost">A$895.20</strong><small>Selected period · AUD</small>
+              </div>
+              <div class="overview-metric">
+                <span class="overview-metric-icon icon-floor">▥</span
+                ><span class="overview-metric-title">Highest usage floor</span
+                ><strong id="statTopFloor">Floor 2</strong><small>Largest share of usage</small>
+              </div>
+              <div class="overview-metric">
+                <span class="overview-metric-icon icon-room">↗</span
+                ><span class="overview-metric-title">Highest usage room</span
+                ><strong id="statTopRoom">205</strong
+                ><small id="statTopRoomUsage">56 kWh today</small>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- ENERGY SECTION -->
+        <section class="energy-main-section">
+          <!-- FLOOR PLAN -->
+          <div class="floor-plan-card">
+            <div class="section-title-row">
+              <div>
+                <h3>Room Energy Floor Plan</h3>
+                <p>Select a room to view energy usage and status.</p>
+              </div>
+              <span class="live-badge">Room overview</span>
+            </div>
+            <div class="energy-alert">
+              Energy watch: Room 205 has the highest room reading today (56 kWh). Select it to view
+              details.
+            </div>
+            <!-- FLOOR NAVIGATION -->
+            <div class="floor-navigation">
+              <button
+                class="floor-btn active-floor-btn"
+                id="floorBtn1"
+                onclick="showFloor(1)"
+                type="button"
+              >
+                Floor 1
+              </button>
+              <button class="floor-btn" id="floorBtn2" onclick="showFloor(2)" type="button">
+                Floor 2
+              </button>
+              <button class="floor-btn" id="floorBtn3" onclick="showFloor(3)" type="button">
+                Floor 3
+              </button>
+            </div>
+            <!-- STATUS LEGEND -->
+            <div class="status-legend">
+              <span class="legend-item"><span class="legend-dot legend-dot-low"></span>Normal</span>
+              <span class="legend-item"
+                ><span class="legend-dot legend-dot-medium"></span>Medium</span
+              >
+              <span class="legend-item"><span class="legend-dot legend-dot-high"></span>High</span>
+            </div>
+            <div class="floor-plan-wrapper">
+              <!-- ========================
+                         FLOOR 1
+                    ========================= -->
+              <div class="floor-plan" id="floor1">
+                <div class="floor-label">Floor 1</div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="1"
+                    data-kwh="18"
+                    data-note="Usage is within normal range."
+                    data-room="Room 001"
+                    data-sensor="S-001"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 001</span>
+                    <small>18 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="1"
+                    data-kwh="32"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 002"
+                    data-sensor="S-002"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 002</span>
+                    <small>32 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="1"
+                    data-kwh="22"
+                    data-note="Energy usage stable in Party Hall."
+                    data-room="Party Hall"
+                    data-sensor="S-PH1"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Party Hall</span>
+                    <small>22 kWh</small>
+                  </div>
+                </div>
+              </div>
+              <!-- ========================
+                         FLOOR 2
+                    ========================= -->
+              <div class="floor-plan" id="floor2" style="display: none">
+                <div class="floor-label">Floor 2</div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="14"
+                    data-note="Low energy usage."
+                    data-room="Room 201"
+                    data-sensor="S-201"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 201</span>
+                    <small>14 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="31"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 202"
+                    data-sensor="S-202"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 202</span>
+                    <small>31 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="19"
+                    data-note="Usage within normal range."
+                    data-room="Room 203"
+                    data-sensor="S-203"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 203</span>
+                    <small>19 kWh</small>
+                  </div>
+                </div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="17"
+                    data-note="Low energy usage."
+                    data-room="Room 204"
+                    data-sensor="S-204"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 204</span>
+                    <small>17 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-high active-room"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="56"
+                    data-note="High energy consumption detected. Inspection recommended."
+                    data-room="Room 205"
+                    data-sensor="S-205"
+                    data-sensor-status="Warning"
+                    data-usage-status="high"
+                  >
+                    <span>Room 205</span>
+                    <small>56 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="28"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 206"
+                    data-sensor="S-206"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 206</span>
+                    <small>28 kWh</small>
+                  </div>
+                </div>
+                <div class="corridor">CORRIDOR</div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="16"
+                    data-note="Low energy usage."
+                    data-room="Room 207"
+                    data-sensor="S-207"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 207</span>
+                    <small>16 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="33"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 208"
+                    data-sensor="S-208"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 208</span>
+                    <small>33 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="20"
+                    data-note="Usage within normal range."
+                    data-room="Room 209"
+                    data-sensor="S-209"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 209</span>
+                    <small>20 kWh</small>
+                  </div>
+                </div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="27"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 210"
+                    data-sensor="S-210"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 210</span>
+                    <small>27 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="13"
+                    data-note="Low energy usage."
+                    data-room="Room 211"
+                    data-sensor="S-211"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 211</span>
+                    <small>13 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="2"
+                    data-kwh="21"
+                    data-note="Usage within normal range."
+                    data-room="Room 212"
+                    data-sensor="S-212"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 212</span>
+                    <small>21 kWh</small>
+                  </div>
+                </div>
+              </div>
+              <!-- ========================
+                         FLOOR 3
+                    ========================= -->
+              <div class="floor-plan" id="floor3" style="display: none">
+                <div class="floor-label">Floor 3</div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="15"
+                    data-note="Low energy usage."
+                    data-room="Room 301"
+                    data-sensor="S-301"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 301</span>
+                    <small>15 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="30"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 302"
+                    data-sensor="S-302"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 302</span>
+                    <small>30 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-high"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="48"
+                    data-note="High energy consumption detected."
+                    data-room="Room 303"
+                    data-sensor="S-303"
+                    data-sensor-status="Warning"
+                    data-usage-status="high"
+                  >
+                    <span>Room 303</span>
+                    <small>48 kWh</small>
+                  </div>
+                </div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="18"
+                    data-note="Usage within normal range."
+                    data-room="Room 304"
+                    data-sensor="S-304"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 304</span>
+                    <small>18 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="12"
+                    data-note="Low energy usage."
+                    data-room="Room 305"
+                    data-sensor="S-305"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 305</span>
+                    <small>12 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="35"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 306"
+                    data-sensor="S-306"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 306</span>
+                    <small>35 kWh</small>
+                  </div>
+                </div>
+                <div class="corridor">CORRIDOR</div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="29"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 307"
+                    data-sensor="S-307"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 307</span>
+                    <small>29 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="11"
+                    data-note="Low energy usage."
+                    data-room="Room 308"
+                    data-sensor="S-308"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 308</span>
+                    <small>11 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="22"
+                    data-note="Usage within normal range."
+                    data-room="Room 309"
+                    data-sensor="S-309"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 309</span>
+                    <small>22 kWh</small>
+                  </div>
+                </div>
+                <div class="floor-row">
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="16"
+                    data-note="Low energy usage."
+                    data-room="Room 310"
+                    data-sensor="S-310"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 310</span>
+                    <small>16 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-medium"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="34"
+                    data-note="Moderate energy consumption."
+                    data-room="Room 311"
+                    data-sensor="S-311"
+                    data-sensor-status="Online"
+                    data-usage-status="medium"
+                  >
+                    <span>Room 311</span>
+                    <small>34 kWh</small>
+                  </div>
+                  <div
+                    class="room-block room-low"
+                    data-filter-status="normal"
+                    data-floor="3"
+                    data-kwh="19"
+                    data-note="Usage within normal range."
+                    data-room="Room 312"
+                    data-sensor="S-312"
+                    data-sensor-status="Online"
+                    data-usage-status="normal"
+                  >
+                    <span>Room 312</span>
+                    <small>19 kWh</small>
+                  </div>
+                </div>
+              </div>
+              <!-- DETAILS PANEL -->
+              <div class="room-detail-panel">
+                <p class="panel-label">Selected room · Today</p>
+                <h3 id="panelRoom">Select a room</h3>
+                <div class="panel-info-row">
+                  <span>Sensor ID</span>
+                  <strong id="panelSensor">---</strong>
+                </div>
+                <div class="panel-info-row">
+                  <span>Energy Used</span>
+                  <strong id="panelEnergy">---</strong>
+                </div>
+                <div class="panel-info-row">
+                  <span>Status</span>
+                  <strong id="panelStatus">---</strong>
+                </div>
+                <div class="panel-info-row">
+                  <span>Sensor Status</span>
+                  <strong id="panelSensorStatus">---</strong>
+                </div>
+                <div class="panel-progress">
+                  <div id="panelBar"></div>
+                </div>
+                <p class="panel-note" id="panelNote">Select a room to see its energy reading.</p>
+              </div>
+            </div>
+          </div>
+          <!-- ENERGY SUMMARY -->
+          <div class="energy-summary-card">
+            <h3>Building Energy Summary</h3>
+            <div class="summary-box">
+              <h2><span id="summaryTotal">4,476</span> <span class="unit">kWh</span></h2>
+              <p id="summaryPeriod">Total for 7 Days</p>
+              <small class="cost-line" id="summaryCost">≈ A$895.20 estimated cost</small>
+            </div>
+            <div class="summary-box">
+              <strong>Top Rooms · Today</strong>
+              <ol class="rank-list">
+                <li>
+                  <span class="rank-num">1</span>Room 205<span class="rank-value">56 kWh</span>
+                </li>
+                <li>
+                  <span class="rank-num">2</span>Room 303<span class="rank-value">48 kWh</span>
+                </li>
+                <li>
+                  <span class="rank-num">3</span>Room 306<span class="rank-value">35 kWh</span>
+                </li>
+              </ol>
+            </div>
+            <div class="summary-box">
+              <strong>Period Trend</strong>
+              <p id="summaryTrend">↓ 3.1% vs previous period</p>
+            </div>
+            <div class="summary-box">
+              <strong>Potential Savings</strong>
+              <p id="summarySavings">A$89.52</p>
+              <small>At the selected reduction scenario</small>
+            </div>
+          </div>
+        </section>
+        <!-- ENERGY VIEW CONTROLS -->
+        <section class="dashboard-filters-card">
+          <div class="filter-heading">
+            <div>
+              <h3>Dashboard Filters</h3>
+              <p>Adjust the dashboard view by time period and room status.</p>
+            </div>
+            <span class="filter-result" id="filterResult">Showing all rooms</span>
+          </div>
+          <div class="filter-controls">
+            <div class="filter-group">
+              <label for="periodFilter">Time period</label>
+              <select id="periodFilter">
+                <option value="today">Today</option>
+                <option selected="" value="7days">7 Days</option>
+                <option value="30days">30 Days</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="statusFilter">Room status</label>
+              <select id="statusFilter">
+                <option selected="" value="all">All Rooms</option>
+                <option value="normal">Normal</option>
+                <option value="medium">Medium Usage</option>
+                <option value="high">High Usage</option>
+                <option value="warning">Sensor Warning</option>
+              </select>
+            </div>
+            <button class="filter-reset" id="resetFilters" type="button">Reset Filters</button>
+            <button class="filter-reset" hidden id="downloadReadings" type="button">
+              Download readings
+            </button>
+          </div>
+        </section>
+        <!-- PERIOD COMPARISON -->
+        <section class="week8-analysis">
+          <div class="enhancement-card comparison-card">
+            <div class="enhancement-header">
+              <div>
+                <h3>Energy Comparison</h3>
+                <p>Selected period compared with the previous period.</p>
+              </div>
+              <span class="period-badge" id="comparisonPeriodBadge">7 Days</span>
+            </div>
+            <div class="comparison-main">
+              <div class="comparison-total">
+                <span>Current usage</span>
+                <strong id="comparisonCurrent">171 kWh</strong>
+              </div>
+              <div class="comparison-arrow" id="comparisonArrow">↓</div>
+              <div class="comparison-total previous">
+                <span>Previous usage</span>
+                <strong id="comparisonPrevious">182 kWh</strong>
+              </div>
+              <div class="comparison-change" id="comparisonChange">
+                <strong>6% lower</strong>
+                <span>11 kWh difference</span>
+              </div>
+            </div>
+            <div class="floor-comparison" id="changesPanel">
+              <div class="floor-comparison-heading">
+                <strong>Biggest changes since the last reading</strong>
+                <span id="comparisonCost">Estimated cost: A$34.20</span>
+              </div>
+              <div id="changeRows">
+                <p class="change-empty">Room changes appear here once live readings load.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- ADDITIONAL DASHBOARD FEATURES -->
+        <section class="dashboard-enhancements">
+          <div class="enhancement-card energy-history-card">
+            <div class="enhancement-header">
+              <div>
+                <h3>Energy Usage History</h3>
+                <p>Energy usage across the selected period.</p>
+              </div>
+              <span class="period-badge">7 Days</span>
+            </div>
+            <div class="history-chart">
+              <div class="chart-y-labels">
+                <span>350</span><span>250</span><span>150</span><span>50</span><span>0</span>
+              </div>
+              <div class="chart-area">
+                <svg
+                  aria-label="Seven day energy usage chart"
+                  preserveaspectratio="none"
+                  viewbox="0 0 700 230"
+                >
+                  <line class="chart-grid-line" x1="0" x2="700" y1="20" y2="20"></line>
+                  <line class="chart-grid-line" x1="0" x2="700" y1="75" y2="75"></line>
+                  <line class="chart-grid-line" x1="0" x2="700" y1="130" y2="130"></line>
+                  <line class="chart-grid-line" x1="0" x2="700" y1="185" y2="185"></line>
+                  <polyline
+                    class="history-line"
+                    points="10,160 120,135 230,150 340,92 450,110 560,55 690,72"
+                  ></polyline>
+                  <polygon
+                    class="history-area"
+                    points="10,160 120,135 230,150 340,92 450,110 560,55 690,72 690,205 10,205"
+                  ></polygon>
+                  <circle class="chart-point" cx="10" cy="160" r="5"></circle>
+                  <circle class="chart-point" cx="120" cy="135" r="5"></circle>
+                  <circle class="chart-point" cx="230" cy="150" r="5"></circle>
+                  <circle class="chart-point" cx="340" cy="92" r="5"></circle>
+                  <circle class="chart-point" cx="450" cy="110" r="5"></circle>
+                  <circle class="chart-point" cx="560" cy="55" r="5"></circle>
+                  <circle class="chart-point" cx="690" cy="72" r="5"></circle>
+                </svg>
+                <div class="chart-x-labels">
+                  <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+                  ><span>Sat</span><span>Sun</span>
+                </div>
+              </div>
+            </div>
+            <div class="history-summary">
+              <div><span>Average</span><strong>238 kWh</strong></div>
+              <div><span>Peak Day</span><strong>Sat</strong></div>
+              <div><span>Change</span><strong class="positive-text">↓ 6%</strong></div>
+            </div>
+          </div>
+          <div class="enhancement-card efficiency-card">
+            <div class="enhancement-header">
+              <div>
+                <h3>Energy Efficiency</h3>
+                <p>Usage categories across all rooms.</p>
+              </div>
+              <span class="efficiency-score">84</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width: 84%"></div>
+            </div>
+            <div class="score-labels">
+              <span>Needs attention</span><span>Good</span><span>Excellent</span>
+            </div>
+            <div class="efficiency-items">
+              <div class="efficiency-item">
+                <span><span class="mini-status good"></span>Normal rooms</span>
+                <strong>82%</strong>
+              </div>
+              <div class="efficiency-item">
+                <span><span class="mini-status medium"></span>Medium usage</span>
+                <strong>12%</strong>
+              </div>
+              <div class="efficiency-item">
+                <span><span class="mini-status high"></span>High usage</span>
+                <strong>6%</strong>
+              </div>
+            </div>
+            <div class="efficiency-tip">
+              <strong>Tip</strong>
+              <span>Check Room 205 first to reduce the building's peak demand.</span>
+            </div>
+          </div>
+          <div class="enhancement-card ranking-card">
+            <div class="enhancement-header">
+              <div>
+                <h3>Top Energy Consumers</h3>
+                <p>Rooms with the highest energy readings today.</p>
+              </div>
+              <span class="period-badge">Today</span>
+            </div>
+            <div class="ranking-list">
+              <div class="ranking-row">
+                <span class="rank-number">1</span>
+                <div class="ranking-info"><strong>Room 205</strong><small>Floor 2</small></div>
+                <div class="ranking-bar"><span style="width: 100%"></span></div>
+                <strong class="ranking-value">56 kWh</strong>
+              </div>
+              <div class="ranking-row">
+                <span class="rank-number">2</span>
+                <div class="ranking-info"><strong>Room 303</strong><small>Floor 3</small></div>
+                <div class="ranking-bar"><span style="width: 86%"></span></div>
+                <strong class="ranking-value">48 kWh</strong>
+              </div>
+              <div class="ranking-row">
+                <span class="rank-number">3</span>
+                <div class="ranking-info"><strong>Room 306</strong><small>Floor 3</small></div>
+                <div class="ranking-bar"><span style="width: 63%"></span></div>
+                <strong class="ranking-value">35 kWh</strong>
+              </div>
+              <div class="ranking-row">
+                <span class="rank-number">4</span>
+                <div class="ranking-info"><strong>Room 002</strong><small>Floor 1</small></div>
+                <div class="ranking-bar"><span style="width: 57%"></span></div>
+                <strong class="ranking-value">32 kWh</strong>
+              </div>
+            </div>
+          </div>
+          <div class="enhancement-card alerts-card">
+            <div class="enhancement-header">
+              <div>
+                <h3>Areas to Review</h3>
+                <p>Rooms and floors with higher energy demand.</p>
+              </div>
+              <span class="alert-count">4 Active</span>
+            </div>
+            <div class="alert-list">
+              <div class="alert-row alert-warning">
+                <span class="alert-icon">!</span>
+                <div>
+                  <strong>Room 205</strong><small>Higher room demand · review cooling hours</small>
+                </div>
+              </div>
+              <div class="alert-row alert-warning">
+                <span class="alert-icon">!</span>
+                <div>
+                  <strong>Room 303</strong><small>Elevated room use · compare daily pattern</small>
+                </div>
+              </div>
+              <div class="alert-row alert-neutral">
+                <span class="alert-icon">!</span>
+                <div>
+                  <strong>Floor 2</strong><small>Largest floor demand · review shared loads</small>
+                </div>
+              </div>
+              <div class="alert-row alert-neutral">
+                <span class="alert-icon">i</span>
+                <div>
+                  <strong>Room 306</strong
+                  ><small>Above-average room usage · check operating hours</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- ENERGY OPERATIONS -->
+        <section aria-labelledby="opsHeading" class="energy-operations">
+          <div class="operations-header">
+            <div>
+              <span class="section-kicker">BUILDING ENERGY INTELLIGENCE</span>
+              <h2 id="opsHeading">Energy Operations</h2>
+              <p>Analyse usage, spot the largest demand and explore potential reductions.</p>
+            </div>
+            <div class="operations-status">
+              <span id="sourceStatus">Building overview</span
+              ><strong id="opsPeriodBadge">7 Days</strong>
+            </div>
+          </div>
+          <div class="operations-grid">
+            <div class="energy-load-panel">
+              <div class="operations-card-heading">
+                <div>
+                  <span class="card-eyebrow">PERIOD CONSUMPTION</span>
+                  <h3>Where the energy goes</h3>
+                </div>
+                <span class="load-chip">Energy insights</span>
+              </div>
+              <div class="load-summary">
+                <div class="load-total">
+                  <strong id="opsCurrentUsage">4,476</strong><span>kWh</span
+                  ><small id="opsChange">↓ 3.1% compared with previous period</small>
+                </div>
+                <div class="load-meta">
+                  <div><span>Estimated cost</span><strong id="opsCost">A$895.20</strong></div>
+                  <div><span>Peak interval</span><strong id="opsPeak">Friday</strong></div>
+                </div>
+              </div>
+              <div class="energy-distribution">
+                <div class="distribution-heading">
+                  <strong>Energy distribution by floor</strong
+                  ><span>Share of the selected period</span>
+                </div>
+                <div class="operations-floor-row">
+                  <div class="operations-floor-name">
+                    <strong>Floor 1</strong><span id="floorChart1Share">12%</span>
+                  </div>
+                  <div class="operations-floor-track">
+                    <div class="floor-chart-fill" id="floorChart1" style="width: 12%"></div>
+                  </div>
+                  <strong class="operations-floor-value" id="floorChart1Value">515 kWh</strong>
+                </div>
+                <div class="operations-floor-row">
+                  <div class="operations-floor-name">
+                    <strong>Floor 2</strong><span id="floorChart2Share">45%</span>
+                  </div>
+                  <div class="operations-floor-track">
+                    <div
+                      class="floor-chart-fill floor-chart-fill-high"
+                      id="floorChart2"
+                      style="width: 45%"
+                    ></div>
+                  </div>
+                  <strong class="operations-floor-value" id="floorChart2Value">2,010 kWh</strong>
+                </div>
+                <div class="operations-floor-row">
+                  <div class="operations-floor-name">
+                    <strong>Floor 3</strong><span id="floorChart3Share">44%</span>
+                  </div>
+                  <div class="operations-floor-track">
+                    <div class="floor-chart-fill" id="floorChart3" style="width: 44%"></div>
+                  </div>
+                  <strong class="operations-floor-value" id="floorChart3Value">1,951 kWh</strong>
+                </div>
+              </div>
+              <div class="energy-insight">
+                <span class="insight-icon">↗</span>
+                <div>
+                  <strong>Priority insight</strong>
+                  <p id="opsInsight">
+                    Floor 2 currently contributes the most to building energy use.
+                  </p>
+                  <button class="text-action" id="inspectPriorityRoom" type="button">
+                    Inspect Room 205 →
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="performance-panel">
+              <div class="operations-card-heading">
+                <div>
+                  <span class="card-eyebrow">COMPARATIVE PERFORMANCE</span>
+                  <h3>Performance overview</h3>
+                </div>
+                <span class="load-chip">vs previous period</span>
+              </div>
+              <div class="performance-hero">
+                <div class="performance-ring" id="performanceRing">
+                  <div class="performance-ring-inner">
+                    <strong id="performancePercent">3.1%</strong
+                    ><small id="performanceDirection">less usage</small>
+                  </div>
+                </div>
+                <div class="performance-copy">
+                  <span>Energy change vs previous period</span
+                  ><strong id="performanceDelta" aria-live="polite">144 kWh avoided</strong>
+                  <p id="performanceMessage">
+                    Selected period is using less energy than the previous comparable period.
+                  </p>
+                </div>
+              </div>
+              <div class="performance-metrics">
+                <div>
+                  <span>Previous period</span><strong id="performancePrevious">4,620 kWh</strong>
+                </div>
+                <div>
+                  <span>Daily average</span><strong id="performanceAverage">639 kWh</strong>
+                </div>
+                <div>
+                  <span>Leading floor</span><strong id="performanceFloor">Floor 2 · 45%</strong>
+                </div>
+                <div>
+                  <span>Data basis</span><strong id="performanceSource">Illustrative</strong>
+                </div>
+              </div>
+              <p class="performance-caption">
+                Compare the same time window; room readings relate to today.
+              </p>
+            </div>
+          </div>
+          <div class="operations-bottom-grid">
+            <div class="operations-mini-card energy-mix-panel">
+              <div class="mini-heading">
+                <div>
+                  <span class="card-eyebrow">ENERGY DEMAND DRIVERS</span>
+                  <h3>Usage by service</h3>
+                </div>
+                <span class="network-count">Estimated split</span>
+              </div>
+              <p class="mini-description">Estimated energy demand across main hotel services.</p>
+              <div
+                aria-label="Estimated energy mix: heating and cooling 43%, lighting 26%, hot water 20%, other 11%"
+                class="mix-meter"
+                role="img"
+              >
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="mix-rows" id="energyMixRows">
+                <div class="mix-row">
+                  <span class="mix-dot mix-hvac"></span>
+                  <div>
+                    <strong>Heating &amp; cooling</strong><small>43% of estimated total</small>
+                  </div>
+                  <strong id="mix0">1,925 kWh</strong>
+                </div>
+                <div class="mix-row">
+                  <span class="mix-dot mix-light"></span>
+                  <div><strong>Lighting</strong><small>26% of estimated total</small></div>
+                  <strong id="mix1">1,164 kWh</strong>
+                </div>
+                <div class="mix-row">
+                  <span class="mix-dot mix-water"></span>
+                  <div><strong>Hot water</strong><small>20% of estimated total</small></div>
+                  <strong id="mix2">895 kWh</strong>
+                </div>
+                <div class="mix-row">
+                  <span class="mix-dot mix-other"></span>
+                  <div><strong>Other services</strong><small>11% of estimated total</small></div>
+                  <strong id="mix3">492 kWh</strong>
+                </div>
+              </div>
+              <p class="mix-note">Service shares are estimates, not individual meter readings.</p>
+            </div>
+            <div class="operations-mini-card savings-panel">
+              <div class="mini-heading">
+                <div>
+                  <span class="card-eyebrow">ENERGY REDUCTION SCENARIO</span>
+                  <h3>Potential savings planner</h3>
+                </div>
+                <span class="issue-count savings-badge">Interactive estimate</span>
+              </div>
+              <p class="mini-description">
+                Try a reduction target and electricity price to estimate savings for the period you
+                selected.
+              </p>
+              <div class="scenario-controls">
+                <div class="scenario-label">
+                  <label for="reductionRange">Reduce consumption by</label
+                  ><strong id="reductionLabel">10%</strong>
+                </div>
+                <input
+                  aria-label="Energy reduction target percentage"
+                  id="reductionRange"
+                  max="30"
+                  min="0"
+                  step="5"
+                  type="range"
+                  value="10"
+                />
+                <div class="range-markers"><span>0%</span><span>15%</span><span>30%</span></div>
+                <div class="tariff-control">
+                  <label for="tariffInput">Electricity price (AUD per kWh)</label>
+                  <div class="tariff-input-wrap">
+                    <span>A$</span
+                    ><input
+                      id="tariffInput"
+                      inputmode="decimal"
+                      max="5"
+                      min="0.01"
+                      step="0.01"
+                      type="number"
+                      value="0.27"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="savings-results">
+                <div><span>Energy avoided</span><strong id="savingsKwh">447.6 kWh</strong></div>
+                <div class="savings-highlight">
+                  <span>Estimated savings</span><strong id="savingsMoney">A$89.52</strong>
+                </div>
+                <div>
+                  <span>New estimated cost</span><strong id="savingsNewCost">A$805.68</strong>
+                </div>
+              </div>
+              <div class="scenario-callout" id="scenarioCallout">
+                Planning estimate only. The calculator does not control equipment.
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      'use strict';
+      /*
+ HOTEL ENERGY DASHBOARD — SELF-CONTAINED FRONTEND
+ This JavaScript is embedded inside index.html; main.css is the only other file.
+ INITIAL VALUES: illustrative; external readings can be supplied via window.HotelEnergyDashboard.updateFromSource(payload).
+ Payload example:
+ { period:'today', total:656, previous:704, floors:[72,295,289],
+   history:[60,75,85,110,125,108,93], peak:'2 PM',
+   rooms:{'Room 205':{kwh:56,status:'high',sensorStatus:'online'}} }
+ Period totals must equal the sum of floor totals. Never embed API secrets in this HTML.
+ A real installation requires a secured data service and validated meter readings.
+*/
+      const periodData = {
+        today: {
+          total: 656,
+          previous: 704,
+          floor: [72, 295, 289],
+          history: [60, 75, 85, 110, 125, 108, 93],
+          labels: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm'],
+          peak: '2 PM',
+          days: 1
+        },
+        '7days': {
+          total: 4476,
+          previous: 4620,
+          floor: [515, 2010, 1951],
+          history: [620, 632, 655, 610, 678, 650, 631],
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          peak: 'Friday',
+          days: 7
+        },
+        '30days': {
+          total: 19380,
+          previous: 19900,
+          floor: [2220, 8630, 8530],
+          history: [2530, 2700, 2680, 2920, 2770, 2710, 3070],
+          labels: ['1–4', '5–8', '9–12', '13–16', '17–20', '21–25', '26–30'],
+          peak: 'Days 26–30',
+          days: 30
+        }
+      };
+      let selectedPeriod = '7days';
+      let selectedRoom = null;
+      // Live mode: room values are the latest power draw from the project MySQL database.
+      let liveMode = false;
+      let liveTotalWatts = 0;
+      const money = n =>
+        'A$' + new Intl.NumberFormat('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+      const count = n => new Intl.NumberFormat('en-AU', { maximumFractionDigits: 1 }).format(n);
+      const get = id => document.getElementById(id);
+      const set = (id, value) => {
+        if (get(id)) get(id).textContent = value;
+      };
+      const periodLabel = p => (p === 'today' ? 'Today' : p === '30days' ? '30 Days' : '7 Days');
+      function tariff() {
+        const n = Number(get('tariffInput').value);
+        // Default: Victorian Default Offer 2025-26, small business flat rate (CitiPower), incl. GST.
+        return Number.isFinite(n) && n > 0 ? Math.min(n, 5) : 0.27;
+      }
+      function reduction() {
+        return Number(get('reductionRange').value) || 0;
+      }
+      function roomBlocks() {
+        return Array.from(document.querySelectorAll('.room-block'));
+      }
+      function roomKwh(room) {
+        return Number(room.dataset.kwh || 0);
+      }
+      function roomReading(room) {
+        if (liveMode)
+          return roomStatus(room) === 'none' ? 'No reading' : count(roomKwh(room)) + ' W';
+        return count(roomKwh(room)) + ' kWh';
+      }
+      function roomStatus(room) {
+        return (room.dataset.usageStatus || 'normal').toLowerCase();
+      }
+      function sensorWarning(room) {
+        return (room.dataset.sensorStatus || '').toLowerCase() === 'warning';
+      }
+      function topRooms() {
+        return roomBlocks().sort((a, b) => roomKwh(b) - roomKwh(a));
+      }
+      function showFloor(num) {
+        document.querySelectorAll('.floor-plan').forEach(f => {
+          const i = Number(f.id.replace('floor', '')),
+            b = get('floorBtn' + i);
+          f.style.display = i === num ? 'flex' : 'none';
+          if (b) {
+            b.classList.toggle('active-floor-btn', i === num);
+            b.setAttribute('aria-pressed', String(i === num));
+          }
+        });
+      }
+      window.showFloor = showFloor;
+      function showRoomDetails(room) {
+        if (!room) return;
+        selectedRoom = room;
+        roomBlocks().forEach(x => x.classList.toggle('dashboard-selected-room', x === room));
+        set('panelRoom', room.dataset.room);
+        set('panelSensor', room.dataset.sensor || 'Not mapped');
+        set('panelEnergy', roomReading(room));
+        const status = roomStatus(room);
+        set(
+          'panelStatus',
+          status === 'none'
+            ? 'No reading'
+            : status === 'high'
+              ? 'High Usage'
+              : status === 'medium'
+                ? 'Medium Usage'
+                : 'Normal Usage'
+        );
+        set('panelSensorStatus', room.dataset.sensorStatus || '—');
+        set('panelNote', room.dataset.note || 'Room energy reading.');
+        const bar = get('panelBar');
+        if (bar) {
+          const scale = liveMode ? Math.max(1, roomKwh(topRooms()[0])) : 60;
+          bar.style.width = Math.max(5, Math.min(100, (roomKwh(room) / scale) * 100)) + '%';
+          bar.style.background =
+            status === 'high'
+              ? 'linear-gradient(135deg,#ef4444,#fb7185)'
+              : status === 'medium'
+                ? 'linear-gradient(135deg,#f59e0b,#fbbf24)'
+                : 'linear-gradient(135deg,#22c55e,#86efac)';
+        }
+        if (liveMode) renderPanelLive(room);
+      }
+      function openRoomFromDashboard(roomName, floor) {
+        const room = roomBlocks().find(r => r.dataset.room === roomName);
+        if (!room) return;
+        showFloor(Number(room.dataset.floor) || floor || 1);
+        showRoomDetails(room);
+        room.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      function applyRoomStatusFilter() {
+        const selected = get('statusFilter').value;
+        // In live mode the first filter selects a room type instead of a time period.
+        const type = liveMode ? get('periodFilter').value : 'all';
+        let hits = 0;
+        roomBlocks().forEach(room => {
+          const match =
+            (selected === 'all' ||
+              (selected === 'warning' ? sensorWarning(room) : roomStatus(room) === selected)) &&
+            (type === 'all' || room.dataset.roomType === type);
+          room.classList.toggle('room-filtered-out', !match);
+          room.tabIndex = match ? 0 : -1;
+          if (match) hits++;
+        });
+        const label =
+          selected === 'all' ? 'All rooms' : get('statusFilter').selectedOptions[0].textContent;
+        set(
+          'filterResult',
+          hits + ' matching rooms · ' + label + (type === 'all' ? '' : ' · ' + type)
+        );
+      }
+      function clearRoomSearch() {
+        get('roomSearch').value = '';
+        roomBlocks().forEach(r => r.classList.remove('search-highlight'));
+        get('searchHint').textContent = '';
+        get('searchHint').style.display = 'none';
+        get('clearSearch').style.display = 'none';
+        applyRoomStatusFilter();
+      }
+      function searchRooms() {
+        const q = get('roomSearch').value.trim().toLowerCase();
+        roomBlocks().forEach(r => r.classList.remove('search-highlight'));
+        get('clearSearch').style.display = q ? 'flex' : 'none';
+        const hint = get('searchHint');
+        if (!q) {
+          hint.style.display = 'none';
+          return;
+        }
+        const match = roomBlocks().find(r => r.dataset.room.toLowerCase().includes(q));
+        hint.style.display = 'block';
+        if (!match) {
+          hint.textContent = 'No matching room.';
+          return;
+        }
+        const filter = get('statusFilter').value;
+        if (
+          filter !== 'all' &&
+          !(filter === 'warning' ? sensorWarning(match) : roomStatus(match) === filter)
+        ) {
+          hint.textContent =
+            match.dataset.room + ' found; change the room-status filter to view it.';
+          return;
+        }
+        showFloor(Number(match.dataset.floor));
+        match.classList.add('search-highlight');
+        showRoomDetails(match);
+        hint.textContent = 'Showing ' + match.dataset.room + ' · Floor ' + match.dataset.floor;
+      }
+      function renderRankings() {
+        const highest = topRooms();
+        document.querySelectorAll('.ranking-row').forEach((row, i) => {
+          const room = highest[i];
+          if (!room) return;
+          const name = row.querySelector('.ranking-info strong'),
+            floor = row.querySelector('.ranking-info small');
+          if (name) name.textContent = room.dataset.room;
+          if (floor) floor.textContent = 'Floor ' + room.dataset.floor;
+          const value = row.querySelector('.ranking-value');
+          if (value) value.textContent = roomReading(room);
+          const bar = row.querySelector('.ranking-bar span');
+          if (bar) bar.style.width = (100 * roomKwh(room)) / Math.max(1, roomKwh(highest[0])) + '%';
+          row.dataset.room = room.dataset.room;
+        });
+        document.querySelectorAll('.rank-list li').forEach((li, i) => {
+          if (!highest[i]) return;
+          const num = li.querySelector('.rank-num'),
+            value = li.querySelector('.rank-value');
+          li.childNodes.forEach(n => {
+            if (n.nodeType === Node.TEXT_NODE) n.textContent = '';
+          });
+          if (num) num.insertAdjacentText('afterend', highest[i].dataset.room);
+          if (value) value.textContent = roomReading(highest[i]);
+        });
+        const best = highest[0];
+        if (best) {
+          set('statTopRoom', best.dataset.room.replace('Room ', ''));
+          set('statTopRoomUsage', roomReading(best) + (liveMode ? ' now' : ' today'));
+        }
+        const watch = document.querySelector('.energy-alert');
+        if (watch && best)
+          watch.textContent =
+            'Energy watch: ' +
+            best.dataset.room +
+            (liveMode
+              ? ' has the highest current power draw ('
+              : ' has the highest room reading today (') +
+            roomReading(best) +
+            '). Select it to view details.';
+      }
+      function renderRoomProfile() {
+        const all = roomBlocks().filter(r => roomStatus(r) !== 'none');
+        const n = all.length || 1;
+        const statuses = ['normal', 'medium', 'high'].map(
+          s => all.filter(r => roomStatus(r) === s).length
+        );
+        const perc = statuses.map(x => Math.round((100 * x) / n));
+        const profile = document.querySelector('.efficiency-card');
+        if (!profile) return;
+        const h = profile.querySelector('.enhancement-header h3');
+        if (h) h.textContent = 'Room Usage Profile';
+        const score = profile.querySelector('.efficiency-score');
+        if (score) score.textContent = all.length + (liveMode ? ' reporting' : ' rooms');
+        const fill = profile.querySelector('.score-fill');
+        if (fill) fill.style.width = perc[0] + '%';
+        profile
+          .querySelectorAll('.efficiency-item strong')
+          .forEach((e, i) => (e.textContent = perc[i] + '%'));
+        const tip = profile.querySelector('.efficiency-tip span');
+        const top = topRooms()[0];
+        if (tip && top)
+          tip.textContent =
+            'Review ' + top.dataset.room + ' first; it has the highest room reading.';
+      }
+      function renderHistory(data) {
+        const svg = document.querySelector('.energy-history-card svg');
+        if (!svg) return;
+        const values = data.history;
+        const maxValue = Math.max(...values, 1);
+        const ceiling = Math.ceil((maxValue * 1.15) / 50) * 50;
+        const pts = values.map((v, i) => [
+          10 + (i * 680) / (values.length - 1),
+          205 - (v / ceiling) * 185
+        ]);
+        const pointText = pts.map(([x, y]) => x.toFixed(1) + ',' + y.toFixed(1)).join(' ');
+        const line = svg.querySelector('.history-line'),
+          area = svg.querySelector('.history-area');
+        if (line) line.setAttribute('points', pointText);
+        if (area) area.setAttribute('points', pointText + ' 690,205 10,205');
+        svg.querySelectorAll('.chart-point').forEach((c, i) => {
+          if (!pts[i]) return;
+          c.setAttribute('cx', pts[i][0]);
+          c.setAttribute('cy', pts[i][1]);
+          c.setAttribute('aria-label', data.labels[i] + ': ' + count(values[i]) + ' kWh');
+        });
+        svg.setAttribute('aria-label', 'Energy trend for ' + periodLabel(selectedPeriod));
+        const labels = document.querySelectorAll('.chart-x-labels span');
+        labels.forEach((s, i) => {
+          if (data.labels[i]) s.textContent = data.labels[i];
+        });
+        const axis = document.querySelectorAll('.chart-y-labels span');
+        axis.forEach((s, i) => (s.textContent = count((ceiling * (4 - i)) / 4)));
+        const card = document.querySelector('.energy-history-card');
+        if (card) {
+          const badge = card.querySelector('.period-badge');
+          if (badge) badge.textContent = periodLabel(selectedPeriod);
+          const summary = card.querySelectorAll('.history-summary strong');
+          if (summary[0]) summary[0].textContent = count(data.total / data.days) + ' kWh';
+          if (summary[1]) summary[1].textContent = data.peak;
+          if (summary[2]) summary[2].textContent = trendString(data);
+        }
+      }
+      function percentage(data) {
+        return data.previous ? (100 * Math.abs(data.previous - data.total)) / data.previous : 0;
+      }
+      function trendString(data) {
+        return (data.total <= data.previous ? '↓ ' : '↑ ') + percentage(data).toFixed(1) + '%';
+      }
+      function renderSavings() {
+        if (liveMode) {
+          // Live readings are instantaneous draw, so costs are per hour at that draw.
+          const kwNow = liveTotalWatts / 1000,
+            rate = tariff(),
+            pct = reduction(),
+            saved = (kwNow * pct) / 100;
+          set('reductionLabel', pct + '%');
+          set('savingsKwh', count(saved) + ' kWh per hour');
+          set('savingsMoney', money(saved * rate) + '/h');
+          set('savingsNewCost', money((kwNow - saved) * rate) + '/h');
+          set('summarySavings', money(saved * rate) + ' per hour');
+          set('statCost', money(kwNow * rate) + '/h');
+          set('summaryCost', '≈ ' + money(kwNow * rate) + ' per hour at this draw');
+          set('comparisonCost', 'Estimated cost: ' + money(kwNow * rate) + ' per hour');
+          set('opsCost', money(kwNow * rate) + '/h');
+          return;
+        }
+        const data = periodData[selectedPeriod],
+          rate = tariff(),
+          pct = reduction(),
+          saved = (data.total * pct) / 100;
+        set('reductionLabel', pct + '%');
+        set('savingsKwh', count(saved) + ' kWh');
+        set('savingsMoney', money(saved * rate));
+        set('savingsNewCost', money((data.total - saved) * rate));
+        set('summarySavings', money(saved * rate));
+        set('statCost', money(data.total * rate));
+        set('summaryCost', '≈ ' + money(data.total * rate) + ' estimated cost');
+        set('comparisonCost', 'Estimated cost: ' + money(data.total * rate));
+        set('opsCost', money(data.total * rate));
+      }
+      function renderPeriod(period) {
+        selectedPeriod = periodData[period] ? period : '7days';
+        const data = periodData[selectedPeriod];
+        const current = data.total,
+          previous = data.previous,
+          delta = Math.abs(previous - current),
+          improvement = current <= previous;
+        const p = percentage(data),
+          changeText = trendString(data),
+          leading = data.floor.indexOf(Math.max(...data.floor)) + 1;
+        const leadShare = ((data.floor[leading - 1] / current) * 100).toFixed(1);
+        set('statTotal', count(current));
+        set('statTopFloor', 'Floor ' + leading);
+        set('overviewPeriod', periodLabel(selectedPeriod));
+        set('overviewTrend', changeText);
+        set('overviewPeak', 'Peak: ' + data.peak);
+        const mainTrend = get('overviewTrend');
+        if (mainTrend) {
+          mainTrend.classList.toggle('overview-trend-increase', !improvement);
+        }
+        const smallLine = document.querySelector('.overview-sparkline polyline');
+        if (smallLine) {
+          const levels = data.history,
+            hi = Math.max(...levels, 1),
+            lo = Math.min(...levels),
+            span = Math.max(1, hi - lo);
+          const xy = levels
+            .map(
+              (v, i) =>
+                ((i * 140) / (levels.length - 1)).toFixed(1) +
+                ',' +
+                (29 - ((v - lo) / span) * 22).toFixed(1)
+            )
+            .join(' ');
+          smallLine.setAttribute('points', xy);
+        }
+        set('summaryTotal', count(current));
+        set('summaryPeriod', 'Total for ' + periodLabel(selectedPeriod));
+        set('summaryTrend', changeText + ' vs previous period');
+        set('comparisonPeriodBadge', periodLabel(selectedPeriod));
+        set('comparisonCurrent', count(current) + ' kWh');
+        set('comparisonPrevious', count(previous) + ' kWh');
+        set('comparisonArrow', improvement ? '↓' : '↑');
+        const comparison = get('comparisonChange');
+        if (comparison) {
+          comparison.querySelector('strong').textContent =
+            p.toFixed(1) + '% ' + (improvement ? 'lower' : 'higher');
+          comparison.querySelector('span').textContent = count(delta) + ' kWh difference';
+          comparison.classList.toggle('comparison-negative', !improvement);
+        }
+        set('opsPeriodBadge', periodLabel(selectedPeriod));
+        set('opsCurrentUsage', count(current));
+        set('opsChange', changeText + ' compared with the previous period');
+        set('opsPeak', data.peak);
+        data.floor.forEach((amount, index) => {
+          const n = index + 1,
+            share = current ? (100 * amount) / current : 0;
+          const fbar = get('floor' + n + 'Compare'),
+            fval = get('floor' + n + 'CompareValue');
+          if (fbar) fbar.style.width = ((100 * amount) / Math.max(...data.floor)).toFixed(1) + '%';
+          if (fval) fval.textContent = count(amount) + ' kWh';
+          const chart = get('floorChart' + n),
+            v = get('floorChart' + n + 'Value'),
+            shr = get('floorChart' + n + 'Share');
+          if (chart) chart.style.width = share.toFixed(1) + '%';
+          if (v) v.textContent = count(amount) + ' kWh';
+          if (shr) shr.textContent = share.toFixed(1) + '%';
+        });
+        set('performancePercent', p.toFixed(1) + '%');
+        set('performanceDirection', improvement ? 'less usage' : 'more usage');
+        set('performanceDelta', count(delta) + ' kWh ' + (improvement ? 'avoided' : 'increase'));
+        set('performancePrevious', count(previous) + ' kWh');
+        set('performanceAverage', count(current / data.days) + ' kWh');
+        set('performanceFloor', 'Floor ' + leading + ' · ' + leadShare + '%');
+        set(
+          'performanceMessage',
+          improvement
+            ? 'The selected period used less energy than the previous comparable period.'
+            : 'Usage increased over the previous comparable period — investigate demand peaks.'
+        );
+        const ring = get('performanceRing');
+        if (ring)
+          ring.style.background =
+            'conic-gradient(' +
+            (improvement ? 'var(--secondary)' : '#f97316') +
+            ' 0 ' +
+            Math.min(100, p * 5) +
+            '%,#e2e8f0 ' +
+            Math.min(100, p * 5) +
+            '% 100%)';
+        const top = topRooms()[0];
+        set(
+          'opsInsight',
+          'Floor ' +
+            leading +
+            ' accounts for ' +
+            leadShare +
+            '% of period energy. ' +
+            (top
+              ? top.dataset.room +
+                ' has the highest today-only room reading (' +
+                count(roomKwh(top)) +
+                ' kWh).'
+              : 'Review high-usage rooms to find avoidable demand.')
+        );
+        const button = get('inspectPriorityRoom');
+        if (button && top) {
+          button.textContent = 'Inspect ' + top.dataset.room + ' →';
+          button.dataset.room = top.dataset.room;
+        }
+        // The service split is a modelled scenario, not a measured breakdown.
+        const split = [0.43, 0.26, 0.2, 0.11];
+        let allocated = 0;
+        split.forEach((part, i) => {
+          const amount = i === 3 ? current - allocated : Math.round(current * part);
+          allocated += amount;
+          set('mix' + i, count(amount) + ' kWh');
+        });
+        renderHistory(data);
+        renderSavings();
+        const source = data.source === 'external' ? 'External input' : 'Building overview';
+        set('sourceStatus', source);
+        set('performanceSource', data.source === 'external' ? 'External input' : 'Illustrative');
+      }
+      // Accept independently supplied data for one period. Other periods retain their initial values until separately updated.
+      window.HotelEnergyDashboard = {
+        updateFromSource(payload) {
+          if (!payload || !periodData[payload.period])
+            throw new Error('Use period: today, 7days or 30days');
+          const total = Number(payload.total),
+            previous = Number(payload.previous),
+            floors = payload.floors;
+          if (
+            !Number.isFinite(total) ||
+            total < 0 ||
+            !Number.isFinite(previous) ||
+            previous < 0 ||
+            !Array.isArray(floors) ||
+            floors.length !== 3 ||
+            floors.some(v => !Number.isFinite(Number(v)) || Number(v) < 0) ||
+            Math.abs(floors.reduce((s, n) => s + Number(n), 0) - total) > 0.5
+          )
+            throw new Error('Invalid usage values: total must equal three floor totals');
+          const entry = periodData[payload.period];
+          entry.total = total;
+          entry.previous = previous;
+          entry.floor = floors.map(Number);
+          if (
+            Array.isArray(payload.history) &&
+            payload.history.length === 7 &&
+            payload.history.every(v => Number.isFinite(Number(v)) && Number(v) >= 0)
+          )
+            entry.history = payload.history.map(Number);
+          if (typeof payload.peak === 'string' && payload.peak.trim())
+            entry.peak = payload.peak.slice(0, 50);
+          entry.source = 'external';
+          entry.updatedAt = new Date();
+          if (payload.period === 'today' && payload.rooms && typeof payload.rooms === 'object') {
+            roomBlocks().forEach(r => {
+              const reading = payload.rooms[r.dataset.room];
+              if (!reading) return;
+              if (Number.isFinite(Number(reading.kwh)) && Number(reading.kwh) >= 0) {
+                r.dataset.kwh = String(Number(reading.kwh));
+                const sm = r.querySelector('small');
+                if (sm) sm.textContent = count(roomKwh(r)) + ' kWh';
+              }
+              if (['normal', 'medium', 'high'].includes(reading.status)) {
+                r.dataset.usageStatus = reading.status;
+                r.classList.remove('room-low', 'room-medium', 'room-high');
+                r.classList.add(
+                  reading.status === 'normal'
+                    ? 'room-low'
+                    : reading.status === 'medium'
+                      ? 'room-medium'
+                      : 'room-high'
+                );
+              }
+              if (['Online', 'Warning', 'Offline'].includes(reading.sensorStatus))
+                r.dataset.sensorStatus = reading.sensorStatus;
+            });
+            renderRankings();
+            renderRoomProfile();
+            applyRoomStatusFilter();
+            if (selectedRoom) showRoomDetails(selectedRoom);
+          }
+          get('periodFilter').value = payload.period;
+          renderPeriod(payload.period);
+        }
+      };
+      // Room interaction + keyboard accessibility
+      function bindRoom(room) {
+        room.setAttribute('role', 'button');
+        room.tabIndex = 0;
+        room.setAttribute('aria-label', room.dataset.room + ' energy detail');
+        room.addEventListener('mouseover', () => showRoomDetails(room));
+        room.addEventListener('focus', () => showRoomDetails(room));
+        room.addEventListener('click', () => showRoomDetails(room));
+        room.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            showRoomDetails(room);
+          }
+        });
+      }
+      roomBlocks().forEach(bindRoom);
+      document.querySelectorAll('.ranking-row').forEach(row => {
+        row.setAttribute('role', 'button');
+        row.tabIndex = 0;
+        row.addEventListener('click', () => openRoomFromDashboard(row.dataset.room));
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            row.click();
+          }
+        });
+      });
+      function bindAlertRow(row) {
+        const label = row.querySelector('strong'),
+          match = label && label.textContent.match(/Room \d+/);
+        if (!match) return;
+        row.setAttribute('role', 'button');
+        row.tabIndex = 0;
+        row.addEventListener('click', () => openRoomFromDashboard(match[0]));
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            row.click();
+          }
+        });
+      }
+      document.querySelectorAll('.alert-row').forEach(bindAlertRow);
+      get('roomSearch').addEventListener('input', searchRooms);
+      get('clearSearch').addEventListener('click', clearRoomSearch);
+      get('statusFilter').addEventListener('change', () => {
+        applyRoomStatusFilter();
+        if (get('roomSearch').value) searchRooms();
+      });
+      get('periodFilter').addEventListener('change', e =>
+        liveMode ? applyRoomStatusFilter() : renderPeriod(e.target.value)
+      );
+      get('resetFilters').addEventListener('click', () => {
+        get('statusFilter').value = 'all';
+        get('periodFilter').value = liveMode ? 'all' : '7days';
+        clearRoomSearch();
+        if (!liveMode) renderPeriod('7days');
+      });
+      get('reductionRange').addEventListener('input', renderSavings);
+      get('tariffInput').addEventListener('input', renderSavings);
+      get('inspectPriorityRoom').addEventListener('click', e =>
+        openRoomFromDashboard(e.currentTarget.dataset.room)
+      );
+      // ===== LIVE READINGS =====
+      // Loaded from the Giri Darshan API (GET /api/energy/hotel-readings), which reads this
+      // project's MySQL energy tables. The admin dashboard sends the
+      // signed-in user's token to this iframe with postMessage({type:'gdr-energy-session'}).
+      const API_BASE = window.location.protocol + '//' + window.location.hostname + ':5000/api';
+      const ENERGY_API = API_BASE + '/energy/hotel-readings';
+      const HIGH_WATTS = 1800,
+        MEDIUM_WATTS = 1000;
+      const LEVEL_CLASS = {
+        normal: 'room-low',
+        medium: 'room-medium',
+        high: 'room-high',
+        none: 'room-nodata'
+      };
+      // Readings older than this are flagged as out of date.
+      const STALE_HOURS = 24;
+      const ISSUE_TYPES = [
+        'High energy use',
+        'Air conditioning fault',
+        'Television fault',
+        'Microwave fault',
+        'Other'
+      ];
+      const STAY_STATUS = {
+        pending: 'pending',
+        confirmed: 'confirmed',
+        checkedin: 'checked in',
+        checkedout: 'checked out'
+      };
+      let liveToken = '';
+      let liveTimer = null;
+      // Latest project database data by room name ("Room 101") and average draw by room type.
+      const liveRooms = new Map();
+      const typeAverages = new Map();
+      let lastReport = null;
+      let lastLoadedAt = 0;
+      // Used to spot new readings and new review items between refreshes.
+      let previousLatest = null;
+      let previousAlertKeys = new Set();
+      let livePaused = false;
+      function usageLevel(watts) {
+        return watts >= HIGH_WATTS ? 'high' : watts >= MEDIUM_WATTS ? 'medium' : 'normal';
+      }
+      function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+      function when(value) {
+        return value
+          ? new Date(value).toLocaleString('en-AU', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit'
+            })
+          : '—';
+      }
+      const kw = watts => count(watts / 1000);
+      const sum = values => values.reduce((total, n) => total + n, 0);
+      const shortDate = value =>
+        new Date(value).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+      function ago(value) {
+        const hours = (Date.now() - new Date(value)) / 3600000;
+        if (hours < 1) return 'less than an hour ago';
+        if (hours < 48) return Math.round(hours) + ' hours ago';
+        return Math.round(hours / 24) + ' days ago';
+      }
+      // Specific, appliance-level findings for one room (highest priority first).
+      function roomFindings(r) {
+        const found = [];
+        const reading = r.reading;
+        if (reading) {
+          const issues = r.issues.map(i => i.issue.toLowerCase()).join(' ');
+          if (/air con|\bac\b/.test(issues) && reading.acWatts >= 200)
+            found.push([3, 'AC reported faulty but drawing ' + count(reading.acWatts) + ' W']);
+          if (/television|\btv\b/.test(issues) && reading.tvWatts >= 50)
+            found.push([3, 'TV reported faulty but drawing ' + count(reading.tvWatts) + ' W']);
+          // Only flag a microwave when it is still on at the next reading, not a single use.
+          const previous = r.recent[r.recent.length - 2];
+          if (reading.microwaveWatts >= 700 && previous && previous.microwaveWatts >= 700)
+            found.push([
+              3,
+              'Microwave on for 2 readings in a row (' +
+                count(reading.microwaveWatts) +
+                ' W) · likely left running'
+            ]);
+          if (r.status !== 'occupied' && reading.totalWatts >= 100)
+            found.push([3, count(reading.totalWatts) + ' W while ' + r.status]);
+          const share = reading.totalWatts ? reading.acWatts / reading.totalWatts : 0;
+          if (reading.acWatts >= 1000 && share >= 0.7)
+            found.push([
+              2,
+              'AC is ' +
+                Math.round(100 * share) +
+                '% of the load (' +
+                count(reading.acWatts) +
+                ' W) · check thermostat'
+            ]);
+          const type = typeAverages.get(r.roomType);
+          if (type && type.rooms > 1 && reading.totalWatts >= 1.4 * type.avg)
+            found.push([
+              2,
+              Math.round((100 * (reading.totalWatts - type.avg)) / type.avg) +
+                '% above other ' +
+                r.roomType +
+                's'
+            ]);
+        }
+        return found.sort((a, b) => b[0] - a[0]);
+      }
+      // Occupied rooms whose latest stay has already ended (or that have no stay on record).
+      function staleStay(r) {
+        if (r.status !== 'occupied') return false;
+        if (!r.booking) return true;
+        const at = r.reading ? new Date(r.reading.recordedAt) : new Date();
+        return r.booking.status === 'checkedout' || new Date(r.booking.checkOut) < at;
+      }
+      // Percentage change between a room's last two readings (null when there is only one).
+      function changeSinceLast(r) {
+        const points = r.recent || [];
+        if (points.length < 2) return null;
+        const before = points[points.length - 2].totalWatts,
+          now = points[points.length - 1].totalWatts;
+        return { before, now, pct: before ? (100 * (now - before)) / before : 0 };
+      }
+      async function updateIssue(id, status) {
+        const response = await fetch(API_BASE + '/energy/hotel-maintenance/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + liveToken },
+          body: JSON.stringify({ status })
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.message || 'Could not update the issue.');
+        return body;
+      }
+      async function reportIssue(roomId, issue, description) {
+        const response = await fetch(API_BASE + '/energy/hotel-maintenance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + liveToken },
+          body: JSON.stringify({ roomId, issue, description })
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.message || 'Could not report the issue.');
+        return body;
+      }
+      // Extra room detail in live mode: appliance split, room-type comparison, stay and issues.
+      function renderPanelLive(room) {
+        const box = get('panelLive');
+        if (!box) return;
+        const formOpen = box.querySelector('form:not([hidden])');
+        if (formOpen && box.dataset.room === room.dataset.room) return;
+        box.dataset.room = room.dataset.room;
+        box.replaceChildren();
+        const r = liveRooms.get(room.dataset.room);
+        if (!r) return;
+        const reading = r.reading;
+        // Room trend: the last few readings as a small line, plus the change since the last one.
+        const change = changeSinceLast(r);
+        if (change) {
+          const values = r.recent.map(p => p.totalWatts);
+          const hi = Math.max(...values, 1),
+            lo = Math.min(...values),
+            span = Math.max(1, hi - lo);
+          const svgNS = 'http://www.w3.org/2000/svg';
+          const svg = document.createElementNS(svgNS, 'svg');
+          svg.setAttribute('class', 'panel-trend');
+          svg.setAttribute('viewBox', '0 0 160 36');
+          svg.setAttribute('preserveAspectRatio', 'none');
+          svg.setAttribute('role', 'img');
+          svg.setAttribute(
+            'aria-label',
+            'Last ' + values.length + ' readings: ' + values.map(v => count(v) + ' W').join(', ')
+          );
+          const line = document.createElementNS(svgNS, 'polyline');
+          line.setAttribute(
+            'points',
+            values
+              .map(
+                (v, i) =>
+                  ((i * 156) / (values.length - 1) + 2).toFixed(1) +
+                  ',' +
+                  (32 - ((v - lo) / span) * 28).toFixed(1)
+              )
+              .join(' ')
+          );
+          svg.append(line);
+          const up = change.pct >= 0;
+          box.append(
+            svg,
+            el(
+              'p',
+              'panel-live-line ' + (up ? 'panel-change-up' : 'panel-change-down'),
+              (up ? '▲ ' : '▼ ') +
+                Math.abs(change.pct).toFixed(0) +
+                '% since the last reading (' +
+                count(change.before) +
+                ' W → ' +
+                count(change.now) +
+                ' W)'
+            )
+          );
+        }
+        if (reading) {
+          const parts = [
+            ['AC', reading.acWatts],
+            ['TV', reading.tvWatts],
+            ['Microwave', reading.microwaveWatts]
+          ];
+          const meter = el('div', 'mix-meter panel-mix');
+          meter.setAttribute('role', 'img');
+          meter.setAttribute(
+            'aria-label',
+            parts.map(([name, w]) => name + ' ' + count(w) + ' W').join(', ')
+          );
+          parts.forEach(([, w]) => {
+            const segment = el('span');
+            segment.style.width =
+              (reading.totalWatts ? (100 * w) / reading.totalWatts : 0).toFixed(1) + '%';
+            meter.append(segment);
+          });
+          box.append(
+            meter,
+            el(
+              'p',
+              'panel-live-line',
+              parts.map(([name, w]) => name + ' ' + count(w) + ' W').join(' · ')
+            )
+          );
+          const type = typeAverages.get(r.roomType);
+          if (type && type.rooms > 1 && type.avg) {
+            const diff = Math.round((100 * (reading.totalWatts - type.avg)) / type.avg);
+            box.append(
+              el(
+                'p',
+                'panel-live-line',
+                (diff > 0 ? '+' : '') +
+                  diff +
+                  '% vs other ' +
+                  r.roomType +
+                  's (avg ' +
+                  count(type.avg) +
+                  ' W)'
+              )
+            );
+          }
+        }
+        const stay = r.booking;
+        box.append(
+          el(
+            'p',
+            'panel-live-line',
+            stay
+              ? 'Stay ' +
+                  stay.ref +
+                  ' · ' +
+                  (STAY_STATUS[stay.status] || stay.status) +
+                  ' · ' +
+                  shortDate(stay.checkIn) +
+                  '–' +
+                  shortDate(stay.checkOut) +
+                  ' · ' +
+                  stay.guests +
+                  (stay.guests === 1 ? ' guest' : ' guests') +
+                  (reading
+                    ? ' · ' + count(Math.round(reading.totalWatts / stay.guests)) + ' W per guest'
+                    : '')
+              : 'No booking on record for this room.'
+          )
+        );
+        if (staleStay(r) && stay)
+          box.append(
+            el(
+              'p',
+              'panel-live-line panel-live-warning',
+              'Marked occupied, but this stay ended ' + shortDate(stay.checkOut) + '.'
+            )
+          );
+        // The room-type comparison is already shown above, so skip that finding here.
+        roomFindings(r)
+          .filter(([, text]) => !text.includes('% above other '))
+          .forEach(([, text]) => box.append(el('p', 'panel-live-line panel-live-warning', text)));
+        r.issues.forEach(i => {
+          const line = el(
+            'p',
+            'panel-live-line panel-issue',
+            'Maintenance: ' +
+              i.issue +
+              ' (' +
+              i.status.replace('_', ' ') +
+              ', ' +
+              shortDate(i.reportedAt) +
+              ') '
+          );
+          const resolve = el('button', 'text-action', 'Mark resolved');
+          resolve.type = 'button';
+          resolve.addEventListener('click', async () => {
+            resolve.disabled = true;
+            try {
+              await updateIssue(i.id, 'resolved');
+              lastReport = {
+                room: room.dataset.room,
+                text: 'Marked "' + i.issue + '" as resolved.'
+              };
+              loadLiveReadings();
+            } catch (error) {
+              resolve.disabled = false;
+              resolve.textContent =
+                error instanceof TypeError ? 'Cannot reach the backend' : error.message;
+            }
+          });
+          line.append(resolve);
+          box.append(line);
+        });
+
+        // Report issue: a small inline form that writes to the equipment faults table.
+        const toggle = el('button', 'text-action panel-report-toggle', 'Report issue →');
+        toggle.type = 'button';
+        const form = el('form', 'panel-report-form');
+        form.hidden = true;
+        const select = el('select');
+        select.setAttribute('aria-label', 'Issue type');
+        ISSUE_TYPES.forEach(t => select.append(new Option(t, t)));
+        const findings = roomFindings(r);
+        if (findings.length) {
+          const top = findings[0][1].toLowerCase();
+          select.value = /microwave/.test(top)
+            ? 'Microwave fault'
+            : /\btv\b/.test(top)
+              ? 'Television fault'
+              : /\bac\b/.test(top)
+                ? 'Air conditioning fault'
+                : 'High energy use';
+        }
+        const details = el('input');
+        details.type = 'text';
+        details.maxLength = 500;
+        details.placeholder = 'Details (optional)';
+        details.setAttribute('aria-label', 'Issue details');
+        details.value = findings.length ? findings[0][1] : '';
+        const submit = el('button', 'filter-reset', 'Send to maintenance');
+        submit.type = 'submit';
+        const message = el('p', 'panel-live-line');
+        message.setAttribute('role', 'status');
+        // Keeps the confirmation visible after the readings refresh re-renders the panel.
+        if (lastReport && lastReport.room === room.dataset.room)
+          message.textContent = lastReport.text;
+        form.append(select, details, submit);
+        toggle.addEventListener('click', () => {
+          form.hidden = !form.hidden;
+          if (!form.hidden) select.focus();
+        });
+        form.addEventListener('submit', async event => {
+          event.preventDefault();
+          submit.disabled = true;
+          try {
+            const result = await reportIssue(r.id, select.value, details.value);
+            form.hidden = true;
+            lastReport = {
+              room: room.dataset.room,
+              text: 'Reported to maintenance (#' + result.id + ').'
+            };
+            message.textContent = lastReport.text;
+            loadLiveReadings();
+          } catch (error) {
+            message.textContent =
+              error instanceof TypeError ? 'Cannot reach the backend.' : error.message;
+          } finally {
+            submit.disabled = false;
+          }
+        });
+        box.append(toggle, form, message);
+      }
+      // Rooms whose reading moved most since the previous one (shown in the comparison card).
+      function renderChangeRows() {
+        const box = get('changeRows');
+        if (!box) return;
+        const changes = [...liveRooms.values()]
+          .map(r => ({ r, change: changeSinceLast(r) }))
+          .filter(x => x.change && Math.abs(x.change.pct) >= 5)
+          .sort((a, b) => Math.abs(b.change.pct) - Math.abs(a.change.pct))
+          .slice(0, 5);
+        if (!changes.length) {
+          box.replaceChildren(
+            el('p', 'change-empty', 'No big changes yet. Changes show here after the next reading.')
+          );
+          return;
+        }
+        const biggest = Math.max(...changes.map(x => Math.abs(x.change.pct)), 1);
+        box.replaceChildren(
+          ...changes.map(({ r, change }) => {
+            const up = change.pct > 0;
+            const row = el('div', 'floor-compare-row change-row');
+            const track = el('div', 'floor-compare-track');
+            const fill = el('span', up ? 'change-fill-up' : 'change-fill-down');
+            fill.style.width = ((100 * Math.abs(change.pct)) / biggest).toFixed(1) + '%';
+            track.append(fill);
+            row.append(
+              el('span', null, 'Room ' + r.roomNumber),
+              track,
+              el(
+                'strong',
+                up ? 'room-change-up' : 'room-change-down',
+                (up ? '▲ ' : '▼ ') +
+                  Math.abs(change.pct).toFixed(0) +
+                  '% · ' +
+                  count(change.now) +
+                  ' W'
+              )
+            );
+            row.dataset.room = 'Room ' + r.roomNumber;
+            row.setAttribute('role', 'button');
+            row.tabIndex = 0;
+            row.title = count(change.before) + ' W → ' + count(change.now) + ' W';
+            row.addEventListener('click', () => openRoomFromDashboard(row.dataset.room));
+            row.addEventListener('keydown', e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                row.click();
+              }
+            });
+            return row;
+          })
+        );
+      }
+      // Short notice at the bottom of the page, e.g. when new readings arrive.
+      function showToast(text, actionLabel, action) {
+        let toast = get('liveToast');
+        if (!toast) {
+          toast = el('div', 'live-toast');
+          toast.id = 'liveToast';
+          toast.setAttribute('role', 'status');
+          document.body.append(toast);
+        }
+        toast.replaceChildren(el('span', null, text));
+        if (actionLabel) {
+          const button = el('button', 'live-toast-action', actionLabel);
+          button.type = 'button';
+          button.addEventListener('click', () => {
+            toast.classList.remove('is-visible');
+            action();
+          });
+          toast.append(button);
+        }
+        toast.classList.add('is-visible');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => toast.classList.remove('is-visible'), 8000);
+      }
+      // Downloads the rooms currently shown on the floor plan (after filters) as a CSV file.
+      function downloadReadings() {
+        const cell = value => {
+          const text = value === null || value === undefined ? '' : String(value);
+          return /[",\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+        };
+        const rows = [
+          [
+            'Room',
+            'Floor',
+            'Room type',
+            'Room status',
+            'AC (W)',
+            'TV (W)',
+            'Microwave (W)',
+            'Total (W)',
+            'Change since last reading (%)',
+            'Recorded at'
+          ]
+        ];
+        roomBlocks()
+          .filter(block => !block.classList.contains('room-filtered-out'))
+          .forEach(block => {
+            const r = liveRooms.get(block.dataset.room);
+            if (!r) return;
+            const reading = r.reading;
+            const change = changeSinceLast(r);
+            rows.push([
+              'Room ' + r.roomNumber,
+              r.floor,
+              r.roomType,
+              r.status,
+              reading ? reading.acWatts : '',
+              reading ? reading.tvWatts : '',
+              reading ? reading.microwaveWatts : '',
+              reading ? reading.totalWatts : '',
+              change ? change.pct.toFixed(1) : '',
+              reading ? new Date(reading.recordedAt).toLocaleString('en-AU') : ''
+            ]);
+          });
+        const csv = rows.map(row => row.map(cell).join(',')).join('\r\n');
+        const link = el('a');
+        link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        // Local date and time, e.g. 202610281449 for 28 Oct 2026, 2:49 pm.
+        const now = new Date();
+        const stamp = [
+          now.getFullYear(),
+          now.getMonth() + 1,
+          now.getDate(),
+          now.getHours(),
+          now.getMinutes()
+        ]
+          .map((n, i) => (i ? String(n).padStart(2, '0') : String(n)))
+          .join('');
+        link.download = 'energy-readings-' + stamp + '.csv';
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        showToast('Downloaded ' + (rows.length - 1) + ' rooms.');
+      }
+      function setSourceBanner(kind, text) {
+        let banner = get('dataSourceBanner');
+        if (!banner) {
+          banner = el('div', 'data-source-banner');
+          banner.id = 'dataSourceBanner';
+          const message = el('span', 'banner-text');
+          message.setAttribute('role', 'status');
+          const updated = el('span', 'banner-updated');
+          updated.id = 'bannerUpdated';
+          const refresh = el('button', 'banner-refresh', 'Refresh');
+          refresh.type = 'button';
+          refresh.id = 'refreshReadings';
+          refresh.addEventListener('click', async () => {
+            refresh.disabled = true;
+            refresh.textContent = 'Refreshing…';
+            await loadLiveReadings();
+            refresh.disabled = false;
+            refresh.textContent = 'Refresh';
+          });
+          // Pause stops the 30-second auto refresh (handy while presenting a specific view).
+          const pause = el('button', 'banner-refresh', 'Pause updates');
+          pause.type = 'button';
+          pause.id = 'pauseReadings';
+          pause.addEventListener('click', () => {
+            livePaused = !livePaused;
+            pause.textContent = livePaused ? 'Resume updates' : 'Pause updates';
+            if (!livePaused) loadLiveReadings();
+            updateBannerAge();
+          });
+          banner.append(message, updated, refresh, pause);
+          document.querySelector('.top-bar').insertAdjacentElement('afterend', banner);
+        }
+        banner.className = 'data-source-banner is-' + kind;
+        banner.querySelector('.banner-text').textContent = text;
+        get('refreshReadings').hidden = !liveToken;
+        get('pauseReadings').hidden = !liveToken;
+        updateBannerAge();
+      }
+      // "Updated 20 s ago": how long since the dashboard last loaded readings.
+      function updateBannerAge() {
+        const label = get('bannerUpdated');
+        if (!label) return;
+        if (!lastLoadedAt) {
+          label.textContent = '';
+          return;
+        }
+        const seconds = Math.round((Date.now() - lastLoadedAt) / 1000);
+        label.textContent =
+          'Updated ' +
+          (seconds < 60 ? seconds + ' s ago' : Math.round(seconds / 60) + ' min ago') +
+          (livePaused ? ' · paused' : '');
+      }
+      setInterval(updateBannerAge, 5000);
+      // Watt averages are shown as whole numbers.
+      const average = values => (values.length ? Math.round(sum(values) / values.length) : 0);
+      // Same geometry as renderHistory, for any number of points (W instead of kWh).
+      function drawLiveChart(values, labels, description) {
+        const svg = document.querySelector('.energy-history-card svg');
+        const ceiling = Math.max(500, Math.ceil((Math.max(...values, 1) * 1.15) / 500) * 500);
+        const step = values.length > 1 ? 680 / (values.length - 1) : 0;
+        const pts = values.map((v, i) => [
+          values.length > 1 ? 10 + i * step : 350,
+          205 - (v / ceiling) * 185
+        ]);
+        const pointText = pts.map(([x, y]) => x.toFixed(1) + ',' + y.toFixed(1)).join(' ');
+        svg.querySelector('.history-line').setAttribute('points', pointText);
+        svg
+          .querySelector('.history-area')
+          .setAttribute(
+            'points',
+            pointText +
+              ' ' +
+              pts[pts.length - 1][0].toFixed(1) +
+              ',205 ' +
+              pts[0][0].toFixed(1) +
+              ',205'
+          );
+        const circles = [...svg.querySelectorAll('.chart-point')];
+        while (circles.length < values.length) {
+          const extra = circles[0].cloneNode();
+          svg.append(extra);
+          circles.push(extra);
+        }
+        circles.forEach((c, i) => {
+          c.style.display = pts[i] ? '' : 'none';
+          if (!pts[i]) return;
+          c.setAttribute('cx', pts[i][0]);
+          c.setAttribute('cy', pts[i][1]);
+          c.setAttribute('aria-label', labels[i] + ': ' + count(values[i]) + ' W');
+        });
+        svg.setAttribute('aria-label', description);
+        document
+          .querySelector('.chart-x-labels')
+          .replaceChildren(...labels.map(label => el('span', null, label)));
+        document
+          .querySelectorAll('.chart-y-labels span')
+          .forEach((s, i) => (s.textContent = count((ceiling * (4 - i)) / 4)));
+      }
+      function setHistorySummary(rows) {
+        document.querySelectorAll('.history-summary > div').forEach((div, i) => {
+          div.querySelector('span').textContent = rows[i][0];
+          div.querySelector('strong').textContent = rows[i][1];
+          div.querySelector('strong').className = '';
+        });
+      }
+      // One-time changes that switch sample-period sections over to live wording.
+      function enterLiveMode() {
+        liveMode = true;
+        const q = s => document.querySelector(s);
+        q('.overview-main-label span:nth-child(2)').textContent = 'Current power draw';
+        q('.overview-total span').textContent = 'kW';
+        q('.overview-performance span:nth-child(2)').textContent = 'average per occupied room';
+        q('.overview-sparkline').setAttribute('aria-label', 'Current power draw by floor');
+        get('statCost').nextElementSibling.textContent = 'Per hour at current draw · AUD';
+        get('statTopFloor').nextElementSibling.textContent = 'Largest share of current draw';
+        q('.section-title-row p').textContent = 'Select a room to view its latest power reading.';
+        q('.live-badge').textContent = 'Live readings';
+        const legend = q('.status-legend');
+        legend.append(el('span', 'legend-item'));
+        legend.lastChild.append(el('span', 'legend-dot legend-dot-none'), 'No reading');
+        q('.panel-label').textContent = 'Selected room · Latest reading';
+        const panelLabels = document.querySelectorAll('.panel-info-row span');
+        panelLabels[0].textContent = 'Reading';
+        panelLabels[1].textContent = 'Power draw';
+        panelLabels[3].textContent = 'Reading status';
+        const download = get('downloadReadings');
+        download.hidden = false;
+        download.addEventListener('click', downloadReadings);
+        const panelLive = el('div', 'panel-live');
+        panelLive.id = 'panelLive';
+        q('.room-detail-panel .panel-progress').insertAdjacentElement('afterend', panelLive);
+        q('.summary-box .unit').textContent = 'kW';
+        document.querySelectorAll('.summary-box > strong')[0].textContent = 'Top Rooms · Latest';
+        document.querySelectorAll('.summary-box > strong')[1].textContent = 'Room Average';
+        q('#summarySavings + small').textContent = 'Per hour at the selected reduction';
+        q('label[for="periodFilter"]').textContent = 'Room type';
+        q('.filter-heading p').textContent = 'Narrow the floor plan by room type and usage level.';
+        const warning = get('statusFilter').querySelector('option[value="warning"]');
+        if (warning) {
+          warning.value = 'none';
+          warning.textContent = 'No reading';
+        }
+        const comparison = q('.comparison-card');
+        comparison.querySelector('.enhancement-header p').textContent =
+          'Average draw per occupied room, highest room type against lowest.';
+        set('comparisonPeriodBadge', 'Room types');
+        q('.efficiency-card .enhancement-header p').textContent =
+          'Usage levels across rooms with a reading.';
+        q('.ranking-card .enhancement-header p').textContent =
+          'Rooms with the highest current power draw.';
+        q('.ranking-card .period-badge').textContent = 'Latest';
+        q('.alerts-card .enhancement-header p').textContent =
+          'Rooms and floors to check, based on the latest readings.';
+        q('.energy-load-panel .card-eyebrow').textContent = 'CURRENT LOAD';
+        q('.energy-load-panel h3').textContent = 'Where the power goes';
+        q('.load-total span').textContent = 'kW';
+        get('opsPeak').previousElementSibling.textContent = 'Recorded';
+        q('.distribution-heading span').textContent = 'Share of current draw';
+        const performance = q('.performance-panel');
+        performance.querySelector('.load-chip').textContent = 'vs building average';
+        performance.querySelector('.performance-copy span').textContent =
+          'Occupied rooms at or below the building average';
+        get('performancePrevious').previousElementSibling.textContent = 'Average per room';
+        get('performanceAverage').previousElementSibling.textContent = 'Per square metre';
+        get('performanceFloor').previousElementSibling.textContent = 'Per guest';
+        performance.querySelector('.performance-caption').textContent =
+          'Uses the latest reading for each occupied room, with room sizes and capacity from MySQL.';
+        const mix = q('.energy-mix-panel');
+        mix.querySelector('h3').textContent = 'Usage by appliance';
+        mix.querySelector('.network-count').textContent = 'Measured';
+        mix.querySelector('.mini-description').textContent =
+          'Measured draw by appliance across all rooms with a reading.';
+        mix.querySelector('.mix-note').textContent =
+          'From the latest room power readings in MySQL.';
+        q('.savings-panel .mini-description').textContent =
+          'Try a reduction target and electricity price to estimate hourly savings at the current power draw.';
+      }
+      function applyLiveData(data) {
+        if (!liveMode) enterLiveMode();
+        const rooms = data.rooms;
+        const reporting = rooms.filter(r => r.reading);
+        const floors = [...new Set(rooms.map(r => r.floor))].sort((a, b) => a - b);
+        const floorWatts = floors.map(f =>
+          sum(reporting.filter(r => r.floor === f).map(r => r.reading.totalWatts))
+        );
+        liveTotalWatts = sum(reporting.map(r => r.reading.totalWatts));
+        const leadIndex = floorWatts.indexOf(Math.max(...floorWatts));
+        const leadFloor = floors[leadIndex];
+        const leadShare = liveTotalWatts
+          ? ((100 * floorWatts[leadIndex]) / liveTotalWatts).toFixed(1)
+          : '0';
+        // Average draw per room type (used by the room panel, findings and comparison card).
+        const types = [...new Set(reporting.map(r => r.roomType || 'Other'))]
+          .map(name => {
+            const group = reporting.filter(r => (r.roomType || 'Other') === name);
+            return {
+              name,
+              rooms: group.length,
+              avg: average(group.map(r => r.reading.totalWatts))
+            };
+          })
+          .sort((a, b) => b.avg - a.avg);
+        liveRooms.clear();
+        rooms.forEach(r =>
+          liveRooms.set('Room ' + r.roomNumber, {
+            ...r,
+            issues: r.issues || [],
+            recent: r.recent || []
+          })
+        );
+        typeAverages.clear();
+        types.forEach(t => typeAverages.set(t.name, t));
+
+        // Floor plan, rebuilt from the project room records (keeps the current floor and selected room).
+        const keepFloor = (document.querySelector('.floor-plan[style*="flex"]') || {}).id;
+        const keepRoom = selectedRoom && selectedRoom.dataset.room;
+        const wrapper = document.querySelector('.floor-plan-wrapper');
+        const panel = wrapper.querySelector('.room-detail-panel');
+        wrapper.querySelectorAll('.floor-plan').forEach(f => f.remove());
+        const nav = document.querySelector('.floor-navigation');
+        nav.replaceChildren();
+        floors.forEach(f => {
+          const button = el('button', 'floor-btn', 'Floor ' + f);
+          button.type = 'button';
+          button.id = 'floorBtn' + f;
+          button.addEventListener('click', () => showFloor(f));
+          nav.append(button);
+          const plan = el('div', 'floor-plan');
+          plan.id = 'floor' + f;
+          plan.append(el('div', 'floor-label', 'Floor ' + f));
+          const row = el('div', 'floor-row');
+          rooms
+            .filter(r => r.floor === f)
+            .forEach(r => {
+              const reading = r.reading;
+              const watts = reading ? reading.totalWatts : 0;
+              const level = reading ? usageLevel(watts) : 'none';
+              const block = el('div', 'room-block ' + LEVEL_CLASS[level]);
+              const about = (r.roomType || 'Room') + ' · ' + r.status + '. ';
+              Object.assign(block.dataset, {
+                room: 'Room ' + r.roomNumber,
+                roomType: r.roomType || 'Other',
+                floor: String(f),
+                kwh: String(watts),
+                usageStatus: level,
+                filterStatus: level,
+                sensor: reading ? 'Reading #' + reading.id : 'None recorded',
+                sensorStatus: reading ? 'Reporting' : 'No reading',
+                note: reading
+                  ? about + 'Reading recorded ' + when(reading.recordedAt) + '.'
+                  : r.status === 'occupied'
+                    ? about + 'Occupied but no power reading has been recorded — check the meter.'
+                    : about + 'Not occupied, so no power reading is expected.'
+              });
+              block.append(el('span', null, 'Room ' + r.roomNumber), el('small'));
+              block.querySelector('small').textContent = reading
+                ? count(watts) + ' W'
+                : 'No reading';
+              // Change arrow against the previous reading (ignores changes under 5%).
+              const change = changeSinceLast(r);
+              if (change && Math.abs(change.pct) >= 5) {
+                const arrow = el(
+                  'em',
+                  'room-change ' + (change.pct > 0 ? 'room-change-up' : 'room-change-down'),
+                  change.pct > 0 ? ' ▲' : ' ▼'
+                );
+                arrow.title =
+                  (change.pct > 0 ? 'Up ' : 'Down ') +
+                  Math.abs(change.pct).toFixed(0) +
+                  '% since the last reading';
+                block.querySelector('small').append(arrow);
+              }
+              bindRoom(block);
+              row.append(block);
+            });
+          plan.append(row);
+          wrapper.insertBefore(plan, panel);
+        });
+        showFloor(keepFloor ? Number(keepFloor.replace('floor', '')) : floors[0]);
+        selectedRoom = roomBlocks().find(r => r.dataset.room === keepRoom) || null;
+        if (selectedRoom) showRoomDetails(selectedRoom);
+
+        // Room types for the filter (keeps the current choice).
+        const typeFilter = get('periodFilter');
+        const keepType = typeFilter.value;
+        const allTypes = [...new Set(rooms.map(r => r.roomType || 'Other'))].sort();
+        typeFilter.replaceChildren(
+          new Option('All room types', 'all'),
+          ...allTypes.map(t => new Option(t, t))
+        );
+        typeFilter.value = allTypes.includes(keepType) ? keepType : 'all';
+
+        // Headline figures.
+        const occupied = rooms.filter(r => r.status === 'occupied');
+        const roomAverage = average(reporting.map(r => r.reading.totalWatts));
+        set('overviewPeriod', 'Latest reading');
+        set('statTotal', kw(liveTotalWatts));
+        set('overviewTrend', count(roomAverage) + ' W');
+        get('overviewTrend').classList.remove('overview-trend-increase');
+        set(
+          'overviewPeak',
+          data.readings.lastReadingAt
+            ? 'Recorded ' +
+                when(data.readings.lastReadingAt) +
+                ' · ' +
+                ago(data.readings.lastReadingAt)
+            : 'No readings recorded'
+        );
+        const lo = Math.min(...floorWatts),
+          span = Math.max(1, Math.max(...floorWatts) - lo);
+        document
+          .querySelector('.overview-sparkline polyline')
+          .setAttribute(
+            'points',
+            floorWatts
+              .map(
+                (v, i) =>
+                  ((i * 140) / Math.max(1, floorWatts.length - 1)).toFixed(1) +
+                  ',' +
+                  (29 - ((v - lo) / span) * 22).toFixed(1)
+              )
+              .join(' ')
+          );
+        set('statTopFloor', 'Floor ' + leadFloor);
+        set('summaryTotal', kw(liveTotalWatts));
+        set(
+          'summaryPeriod',
+          'Current draw · ' + reporting.length + ' of ' + rooms.length + ' rooms reporting'
+        );
+        set(
+          'summaryTrend',
+          count(roomAverage) +
+            ' W per occupied room · ' +
+            occupied.filter(r => r.reading).length +
+            ' of ' +
+            occupied.length +
+            ' occupied rooms reporting'
+        );
+
+        // Room type comparison: highest against lowest average draw.
+        const high = types[0] || { name: 'No readings', rooms: 0, avg: 0 };
+        const low =
+          types.length > 1
+            ? types[types.length - 1]
+            : { name: 'Building average', avg: roomAverage };
+        get('comparisonCurrent').previousElementSibling.textContent = high.name;
+        set('comparisonCurrent', count(high.avg) + ' W');
+        get('comparisonPrevious').previousElementSibling.textContent = low.name;
+        set('comparisonPrevious', count(low.avg) + ' W');
+        set('comparisonArrow', '↑');
+        const typeGap = low.avg ? (100 * (high.avg - low.avg)) / low.avg : 0;
+        const change = get('comparisonChange');
+        change.classList.remove('comparison-negative');
+        change.querySelector('strong').textContent = typeGap.toFixed(1) + '% higher';
+        change.querySelector('span').textContent = count(high.avg - low.avg) + ' W more per room';
+
+        // History chart: over time once there are several reading times, otherwise by floor.
+        const historyCard = document.querySelector('.energy-history-card');
+        const timeline = data.history || [];
+        if (timeline.length >= 2) {
+          const values = timeline.map(h => h.totalWatts);
+          const labels = timeline.map(h =>
+            new Date(h.recordedAt).toLocaleString('en-AU', {
+              day: 'numeric',
+              month: 'short',
+              hour: 'numeric'
+            })
+          );
+          historyCard.querySelector('h3').textContent = 'Power Draw Over Time';
+          historyCard.querySelector('.enhancement-header p').textContent =
+            'Building total at each of the last ' + timeline.length + ' reading times.';
+          historyCard.querySelector('.period-badge').textContent = timeline.length + ' readings';
+          drawLiveChart(values, labels, 'Building power draw over the last readings');
+          const first = values[0],
+            last = values[values.length - 1];
+          setHistorySummary([
+            ['Average', count(average(values)) + ' W'],
+            ['Peak time', labels[values.indexOf(Math.max(...values))]],
+            [
+              'Change',
+              (last <= first ? '↓ ' : '↑ ') +
+                (first ? (100 * Math.abs(last - first)) / first : 0).toFixed(1) +
+                '%'
+            ]
+          ]);
+        } else {
+          const labels = floors.map(f => 'Floor ' + f);
+          historyCard.querySelector('h3').textContent = 'Power Draw by Floor';
+          historyCard.querySelector('.enhancement-header p').textContent =
+            'Latest reading per floor. Shows a timeline once readings are recorded at more than one time.';
+          historyCard.querySelector('.period-badge').textContent =
+            'Floors ' + floors[0] + '–' + floors[floors.length - 1];
+          drawLiveChart(floorWatts, labels, 'Current power draw by floor');
+          setHistorySummary([
+            ['Average per floor', count(average(floorWatts)) + ' W'],
+            ['Peak floor', labels[leadIndex]],
+            ['Lowest floor', labels[floorWatts.indexOf(Math.min(...floorWatts))]]
+          ]);
+        }
+
+        // Performance: rooms against the building average, and normalised draw.
+        const atOrBelow = reporting.filter(r => r.reading.totalWatts <= roomAverage).length;
+        const share = reporting.length ? (100 * atOrBelow) / reporting.length : 0;
+        set('performancePercent', Math.round(share) + '%');
+        set('performanceDirection', 'at or below avg');
+        set('performanceDelta', atOrBelow + ' of ' + reporting.length + ' rooms');
+        const topRoom = reporting.reduce(
+          (best, r) => (!best || r.reading.totalWatts > best.reading.totalWatts ? r : best),
+          null
+        );
+        set(
+          'performanceMessage',
+          reporting.length -
+            atOrBelow +
+            ' rooms draw more than the ' +
+            count(roomAverage) +
+            ' W average' +
+            (topRoom ? '; start with Room ' + topRoom.roomNumber + '.' : '.')
+        );
+        get('performanceRing').style.background =
+          'conic-gradient(var(--secondary) 0 ' +
+          share.toFixed(1) +
+          '%,#e2e8f0 ' +
+          share.toFixed(1) +
+          '% 100%)';
+        const sized = reporting.filter(r => r.sizeSqm > 0),
+          seated = reporting.filter(r => r.capacity > 0);
+        set('performancePrevious', count(roomAverage) + ' W');
+        set(
+          'performanceAverage',
+          sized.length
+            ? count(sum(sized.map(r => r.reading.totalWatts)) / sum(sized.map(r => r.sizeSqm))) +
+                ' W/m²'
+            : '—'
+        );
+        set(
+          'performanceFloor',
+          seated.length
+            ? count(sum(seated.map(r => r.reading.totalWatts)) / sum(seated.map(r => r.capacity))) +
+                ' W/guest'
+            : '—'
+        );
+        set('performanceSource', 'Measured · ' + data.source);
+        set(
+          'opsChange',
+          'Across ' +
+            reporting.length +
+            ' occupied rooms · ' +
+            count(roomAverage) +
+            ' W average each'
+        );
+
+        renderChangeRows();
+
+        // Per-floor bars in the operations panel.
+        const distribution = document.querySelector('.energy-distribution');
+        distribution.querySelectorAll('.operations-floor-row').forEach(n => n.remove());
+        floors.forEach((f, i) => {
+          const share = liveTotalWatts ? (100 * floorWatts[i]) / liveTotalWatts : 0;
+          const opsRow = el('div', 'operations-floor-row');
+          const name = el('div', 'operations-floor-name');
+          name.append(el('strong', null, 'Floor ' + f), el('span', null, share.toFixed(1) + '%'));
+          const opsTrack = el('div', 'operations-floor-track');
+          const fill = el(
+            'div',
+            'floor-chart-fill' + (i === leadIndex ? ' floor-chart-fill-high' : '')
+          );
+          fill.style.width = share.toFixed(1) + '%';
+          opsTrack.append(fill);
+          opsRow.append(
+            name,
+            opsTrack,
+            el('strong', 'operations-floor-value', count(floorWatts[i]) + ' W')
+          );
+          distribution.append(opsRow);
+        });
+
+        // Operations panel.
+        set('sourceStatus', 'Live · ' + data.source);
+        set('opsPeriodBadge', 'Latest reading');
+        set('opsCurrentUsage', kw(liveTotalWatts));
+        set('opsPeak', when(data.readings.lastReadingAt));
+
+        // Measured appliance split.
+        const appliances = [
+          ['Air conditioning', 'mix-hvac', sum(reporting.map(r => r.reading.acWatts))],
+          ['Television', 'mix-light', sum(reporting.map(r => r.reading.tvWatts))],
+          ['Microwave', 'mix-water', sum(reporting.map(r => r.reading.microwaveWatts))]
+        ];
+        const pct = watts => (liveTotalWatts ? (100 * watts) / liveTotalWatts : 0);
+        const meter = document.querySelector('.mix-meter');
+        meter.replaceChildren(...appliances.map(() => el('span')));
+        appliances.forEach(
+          ([, , watts], i) => (meter.children[i].style.width = pct(watts).toFixed(1) + '%')
+        );
+        meter.setAttribute(
+          'aria-label',
+          'Measured power by appliance: ' +
+            appliances
+              .map(([name, , watts]) => name + ' ' + Math.round(pct(watts)) + '%')
+              .join(', ')
+        );
+        get('energyMixRows').replaceChildren(
+          ...appliances.map(([name, dot, watts]) => {
+            const row = el('div', 'mix-row');
+            const label = el('div');
+            label.append(
+              el('strong', null, name),
+              el('small', null, Math.round(pct(watts)) + '% of current draw')
+            );
+            row.append(
+              el('span', 'mix-dot ' + dot),
+              label,
+              el('strong', null, count(watts) + ' W')
+            );
+            return row;
+          })
+        );
+
+        // Areas to review: the most important finding per room, then building-level notes.
+        const alerts = [];
+        [...liveRooms.values()]
+          .map(r => ({ r, found: roomFindings(r) }))
+          .filter(x => x.found.length)
+          .sort(
+            (a, b) =>
+              b.found[0][0] - a.found[0][0] || b.r.reading.totalWatts - a.r.reading.totalWatts
+          )
+          .slice(0, 2)
+          .forEach(({ r, found }) =>
+            alerts.push(['alert-warning', '!', 'Room ' + r.roomNumber, found[0][1]])
+          );
+        // Open maintenance issues (newest first), so reported problems stay visible until resolved.
+        [...liveRooms.values()]
+          .flatMap(r => r.issues.map(i => ({ r, i })))
+          .sort((a, b) => new Date(b.i.reportedAt) - new Date(a.i.reportedAt))
+          .slice(0, 2)
+          .forEach(({ r, i }) =>
+            alerts.push([
+              'alert-neutral',
+              'i',
+              'Room ' + r.roomNumber,
+              'Maintenance: ' + i.issue + ' · ' + i.status.replace('_', ' ')
+            ])
+          );
+        if (!alerts.length)
+          roomBlocks()
+            .filter(r => roomStatus(r) === 'high')
+            .sort((a, b) => roomKwh(b) - roomKwh(a))
+            .slice(0, 2)
+            .forEach(r =>
+              alerts.push(['alert-warning', '!', r.dataset.room, roomReading(r) + ' · high draw'])
+            );
+        const endedStays = rooms.filter(r => staleStay(r));
+        if (endedStays.length === 1)
+          alerts.push([
+            'alert-neutral',
+            '!',
+            'Room ' + endedStays[0].roomNumber,
+            'Marked occupied, but its stay has ended · check room status'
+          ]);
+        else if (endedStays.length > 1)
+          alerts.push([
+            'alert-neutral',
+            '!',
+            endedStays.length + ' occupied rooms',
+            'Stay has ended or no booking on record · check room status'
+          ]);
+        const unmetered = occupied.filter(r => !r.reading).length;
+        if (unmetered)
+          alerts.push([
+            'alert-warning',
+            '!',
+            unmetered + ' occupied rooms',
+            'Occupied but no power reading · check meters'
+          ]);
+        alerts.push([
+          'alert-neutral',
+          '!',
+          'Floor ' + leadFloor,
+          leadShare + '% of current draw · largest floor load'
+        ]);
+        if (!unmetered)
+          alerts.push([
+            'alert-neutral',
+            'i',
+            'All occupied rooms',
+            occupied.length +
+              ' of ' +
+              occupied.length +
+              ' reporting · ' +
+              (rooms.length - occupied.length) +
+              ' unoccupied rooms not metered'
+          ]);
+        // Keep the list short: the most important items come first.
+        alerts.splice(6);
+        document.querySelector('.alert-list').replaceChildren(
+          ...alerts.map(([kind, icon, title, detail]) => {
+            const row = el('div', 'alert-row ' + kind);
+            const text = el('div');
+            text.append(el('strong', null, title), el('small', null, detail));
+            row.append(el('span', 'alert-icon', icon), text);
+            bindAlertRow(row);
+            return row;
+          })
+        );
+        document.querySelector('.alert-count').textContent = alerts.length + ' Active';
+
+        renderRankings();
+        renderRoomProfile();
+        applyRoomStatusFilter();
+        renderSavings();
+        const top = topRooms()[0];
+        set(
+          'opsInsight',
+          'Floor ' +
+            leadFloor +
+            ' accounts for ' +
+            leadShare +
+            '% of current draw.' +
+            (top
+              ? ' ' + top.dataset.room + ' has the highest reading (' + roomReading(top) + ').'
+              : '')
+        );
+        const button = get('inspectPriorityRoom');
+        if (button && top) {
+          button.textContent = 'Inspect ' + top.dataset.room + ' →';
+          button.dataset.room = top.dataset.room;
+        }
+        // New readings since the last refresh: summarise what moved and what is new to review.
+        const latest = data.readings.lastReadingAt ? String(data.readings.lastReadingAt) : null;
+        const alertKeys = new Set(
+          alerts.map(a => a[2] + '|' + a[3].split(' · ')[0].replace(/[\d,.%()]+/g, ''))
+        );
+        if (previousLatest && latest && latest !== previousLatest) {
+          const moved = [...liveRooms.values()]
+            .map(changeSinceLast)
+            .filter(c => c && Math.abs(c.pct) >= 5);
+          const ups = moved.filter(c => c.pct > 0).length;
+          const fresh = [...alertKeys].filter(k => !previousAlertKeys.has(k)).length;
+          showToast(
+            'New readings at ' +
+              new Date(latest).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }) +
+              ' · ' +
+              ups +
+              ' rooms up, ' +
+              (moved.length - ups) +
+              ' down' +
+              (fresh ? ' · ' + fresh + ' new to review' : ''),
+            'See changes',
+            () => get('changesPanel').scrollIntoView({ behavior: 'smooth', block: 'center' })
+          );
+        }
+        previousLatest = latest;
+        previousAlertKeys = alertKeys;
+        const last = data.readings.lastReadingAt;
+        const outOfDate = !last || (Date.now() - new Date(last)) / 3600000 > STALE_HOURS;
+        setSourceBanner(
+          outOfDate ? 'old' : 'live',
+          (outOfDate ? 'Readings are out of date · ' : 'Live readings · ') +
+            'MySQL (' +
+            data.source +
+            ') · ' +
+            reporting.length +
+            ' of ' +
+            rooms.length +
+            ' rooms reporting · latest reading ' +
+            (last ? when(last) + ' (' + ago(last) + ')' : 'none')
+        );
+        document.querySelector('.live-badge').textContent = outOfDate
+          ? 'Last known readings'
+          : 'Live readings';
+      }
+      async function loadLiveReadings() {
+        if (!liveToken) return;
+        try {
+          const response = await fetch(ENERGY_API, {
+            headers: { Authorization: 'Bearer ' + liveToken }
+          });
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok)
+            throw new Error(body.message || 'Request failed (' + response.status + ').');
+          lastLoadedAt = Date.now();
+          applyLiveData(body);
+        } catch (error) {
+          const reason =
+            error instanceof TypeError
+              ? 'cannot reach the backend on localhost:5000.'
+              : error.message;
+          if (liveMode)
+            setSourceBanner(
+              'stale',
+              'Live refresh failed: ' + reason + ' Showing the last readings loaded.'
+            );
+          else
+            setSourceBanner(
+              'sample',
+              'Showing sample data. Live readings could not be loaded: ' + reason
+            );
+        }
+      }
+      window.addEventListener('message', event => {
+        if (
+          event.origin !== window.location.origin ||
+          !event.data ||
+          event.data.type !== 'gdr-energy-session'
+        )
+          return;
+        liveToken = typeof event.data.token === 'string' ? event.data.token : '';
+        clearInterval(liveTimer);
+        if (!liveToken) {
+          setSourceBanner(
+            'sample',
+            'Showing sample data. Sign in as admin or staff to load live readings.'
+          );
+          return;
+        }
+        loadLiveReadings();
+        liveTimer = setInterval(() => livePaused || loadLiveReadings(), 30000);
+      });
+      setSourceBanner(
+        'sample',
+        'Showing sample data. Open Energy Usage from the admin dashboard to load live readings.'
+      );
+
+      renderRankings();
+      renderRoomProfile();
+      showFloor(1);
+      applyRoomStatusFilter();
+      renderPeriod('7days');
+    </script>
+  </body>
+</html>
