@@ -23,6 +23,8 @@ Thumbs.db
 # Transfer archives and editor-specific settings
 *.zip
 *.rar
-.vscode/
+**/.vscode/
+!/.vscode/
+!/.vscode/settings.json
 .idea/
 
