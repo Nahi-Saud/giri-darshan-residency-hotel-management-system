@@ -302,6 +302,8 @@ The feature tests create QA records in the local database.
 
 Runtime uploads are saved under `backend/private-documents`. That directory, local `.env` files and transfer archives are ignored by Git. Do not publish real guest identity documents or database exports containing personal information.
 
+The committed VS Code workspace settings exclude `backend/private-documents/**` from Live Server's file watcher. This prevents a reception document upload from reloading the frontend and returning the user to the Home page. After pulling this change, stop and restart Live Server once so the updated watcher settings take effect.
+
 ## Current limitations and future work
 
 - Payment is a demo database workflow; a real gateway must be added separately.
